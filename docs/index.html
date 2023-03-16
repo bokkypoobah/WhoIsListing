@@ -136,7 +136,7 @@
                 <b-pagination size="sm" v-model="settings.collections.currentPage" @input="settingsUpdated" :total-rows="filteredSortedCollections.length" :per-page="settings.collections.pageSize" style="height: 0;"></b-pagination>
               </div>
               <div class="mt-0 pl-1">
-                <b-form-select size="sm" v-model="settings.collections.pageSize" @change="settingsUpdated" :options="pageSizes" v-b-popover.hover.top="'Addresses page size'"></b-form-select>
+                <b-form-select size="sm" v-model="settings.collections.pageSize" @change="settingsUpdated" :options="pageSizes" v-b-popover.hover.top="'Owners page size'"></b-form-select>
               </div>
             </div>
             <!-- <b-card>
@@ -260,7 +260,7 @@
                 <!-- </b-form-checkbox> -->
               </template>
               <template #cell(owner)="data">
-                {{ data.item.owner }}
+                {{ ensOrAddress(data.item.owner) }}
               </template>
               <template #cell(listed)="data">
                 {{ data.item.listed }}
@@ -663,7 +663,6 @@
               for (const [owner, ownerInfo] of Object.entries(owners)) {
                 let listed = 0;
                 for (const token of ownerInfo.tokens) {
-                  console.log("  " + JSON.stringify(token));
                   if (token.price) {
                     listed++;
                   }
@@ -1152,6 +1151,7 @@
                     await delay(2000); // TODO: Adjust to avoid error 429 Too Many Requests. Fails at 200ms
                   } while (continuation != null /*&& !state.halt && !state.sync.error */);
                   Vue.set(this.collections[contract], 'tokens', tokens);
+
                   const owners = {};
                   for (const [tokenId, data] of Object.entries(tokens)) {
                     if (!(data.owner in owners)) {
@@ -1159,6 +1159,29 @@
                     }
                     owners[data.owner].push(tokenId);
                   }
+
+                  this.sync.completed = 0;
+                  const addresses = Object.keys(owners);
+                  this.sync.total = addresses.length;
+                  this.sync.section = "ENS Names";
+                  const ensMap = {};
+                  for (let i = 0; i < addresses.length & !this.sync.halt; i += ENSOWNERBATCHSIZE) {
+                    const batch = addresses.slice(i, parseInt(i) + ENSOWNERBATCHSIZE);
+                    const allnames = await ensReverseRecordsContract.getNames(batch);
+                    for (let j = 0; j < batch.length; j++) {
+                      const address = batch[j];
+                      const name = allnames[j];
+                      ensMap[address] = name != null && name.length > 0 ? name : address;
+                      // const normalized = normalize(address);
+                    }
+                    this.sync.completed = parseInt(this.sync.completed) + batch.length;
+                  }
+                  this.ensMap = ensMap;
+                  await db0.cache.put({ objectName: 'ensMap', object: ensMap }).then (function() {
+                  }).catch(function(error) {
+                    console.log("error: " + error);
+                  });
+
                   Vue.set(this.collections[contract], 'owners', owners);
                   Vue.set(this.collections[contract], 'updated', timestamp);
                   Vue.set(this.collections[contract], 'blockNumber', blockNumber);
