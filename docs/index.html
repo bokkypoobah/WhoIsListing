@@ -230,7 +230,7 @@
                 <b-form-select size="sm" v-model="settings.owners.sortOption" @change="settingsUpdated" :options="ownersSortOptions" v-b-popover.hover.top="'Yeah. Sort'"></b-form-select>
               </div>
               <div class="mt-0 pr-1">
-                <font size="-2" v-b-popover.hover.top="'# txs'">{{ filteredSortedOwners.length }}</font>
+                <font size="-2" v-b-popover.hover.top="'# listed/owners'">{{ numberListed + '/' + filteredSortedOwners.length }}</font>
               </div>
               <div class="mt-0 pr-1">
                 <b-pagination size="sm" v-model="settings.owners.currentPage" @input="settingsUpdated" :total-rows="filteredSortedOwners.length" :per-page="settings.owners.pageSize" style="height: 0;"></b-pagination>
@@ -618,6 +618,14 @@
           },
           pagedFilteredSortedOwners() {
             return this.filteredSortedOwners.slice((this.settings.owners.currentPage - 1) * this.settings.owners.pageSize, this.settings.owners.currentPage * this.settings.owners.pageSize);
+          },
+          numberListed() {
+            let data = this.filteredOwners;
+            let count = 0;
+            for (const result of this.filteredOwners) {
+              count = parseInt(count) + result.listed;
+            }
+            return count;
           },
           filteredMainTable() {
             const results = [];
