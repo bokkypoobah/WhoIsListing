@@ -259,6 +259,15 @@
               <template #cell(owner)="data">
                 {{ data.item.owner }}
               </template>
+              <template #cell(listed)="data">
+                {{ data.item.listed }}
+              </template>
+              <template #cell(listed)="data">
+                {{ data.item.listed }}
+              </template>
+              <template #cell(owned)="data">
+                {{ data.item.owned }}
+              </template>
               <template #cell()="data">
                 {{ data.value && data.value.length || '' }}
               </template>
@@ -610,46 +619,72 @@
           // },
           filteredOwners() {
             const contracts = [];
-            console.log("selectedCollections: " + JSON.stringify(this.selectedCollections, null, 2));
-            console.log("filteredOwners: " + JSON.stringify(this.collections, null, 2));
-            for (const [contract, collection] of Object.entries(this.collections)) {
-              if (collection.sort != null && collection.sort.length > 0) {
-                contracts.push({ contract, sort: collection.sort });
-              }
-            }
+            // console.log("selectedCollections: " + JSON.stringify(this.selectedCollections, null, 2));
+            // console.log("filteredOwners: " + JSON.stringify(this.collections, null, 2));
+            // for (const [contract, collection] of Object.entries(this.collections)) {
+            //   if (collection.sort != null && collection.sort.length > 0) {
+            //     contracts.push({ contract, sort: collection.sort });
+            //   }
+            // }
 
             const collection = Object.keys(this.selectedCollections).length == 1 && this.collections[Object.keys(this.selectedCollections)[0]] || null;
             console.log("collection: " + JSON.stringify(collection, null, 2));
 
-            contracts.sort((a, b) => ('' + a.sort).localeCompare(b.sort));
-            const order = contracts.map(e => e.contract).slice(0, 15);
-            console.log("filteredOwners - order: " + JSON.stringify(order));
-
-            const table = {};
-            for (const contractIndex in order) {
-              const contract = order[contractIndex];
-              const collection = this.collections[contract];
-              if (collection) {
-                const tokens = collection.tokens;
-                const owners = collection.owners;
-                for (const [owner, tokenIds] of Object.entries(owners)) {
-                  if (!(owner in table)) {
-                    table[owner] = {};
+            // contracts.sort((a, b) => ('' + a.sort).localeCompare(b.sort));
+            // const order = contracts.map(e => e.contract).slice(0, 15);
+            // console.log("filteredOwners - order: " + JSON.stringify(order));
+            //
+            // const table = {};
+            // for (const contractIndex in order) {
+            //   const contract = order[contractIndex];
+            //   const collection = this.collections[contract];
+            //   if (collection) {
+            //     const tokens = collection.tokens;
+            //     const owners = collection.owners;
+            //     for (const [owner, tokenIds] of Object.entries(owners)) {
+            //       if (!(owner in table)) {
+            //         table[owner] = {};
+            //       }
+            //       table[owner][contract] = tokenIds;
+            //     }
+            //   }
+            // }
+            const results = [];
+            // for (const [owner, row] of Object.entries(table)) {
+            //   const record = {};
+            //   record['owner'] = owner;
+            //   for (const contractIndex in order) {
+            //     const contract = order[contractIndex];
+            //     record['c' + contractIndex.toString()] = row[contract] || null;
+            //   }
+            //   results.push(record);
+            // }
+            if (collection) {
+              const owners = {};
+              for (const [tokenId, tokenInfo] of Object.entries(collection.tokens)) {
+                // console.log(tokenId + " " + JSON.stringify(tokenInfo));
+                if (!(tokenInfo.owner in owners)) {
+                  owners[tokenInfo.owner] = {
+                    tokens: [{ tokenId, ...tokenInfo, owner: undefined }],
                   }
-                  table[owner][contract] = tokenIds;
+                } else {
+                  owners[tokenInfo.owner].tokens.push({ tokenId, ...tokenInfo, owner: undefined });
                 }
               }
-            }
-            const results = [];
-            for (const [owner, row] of Object.entries(table)) {
-              const record = {};
-              record['owner'] = owner;
-              for (const contractIndex in order) {
-                const contract = order[contractIndex];
-                record['c' + contractIndex.toString()] = row[contract] || null;
+              // console.log("owners: " + JSON.stringify(owners, null, 2));
+              for (const [owner, ownerInfo] of Object.entries(owners)) {
+                console.log("owner: " + owner + " " + JSON.stringify(ownerInfo));
+                let listed = 0;
+                for (const token of ownerInfo.tokens) {
+                  console.log("  " + JSON.stringify(token));
+                  if (token.price) {
+                    listed++;
+                  }
+                }
+                results.push({ owner, listed, owned: ownerInfo.tokens.length, items: ownerInfo.tokens });
               }
-              results.push(record);
             }
+            console.log("results: " + JSON.stringify(results));
             return results;
           },
           filteredSortedOwners() {
