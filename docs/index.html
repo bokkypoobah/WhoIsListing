@@ -264,33 +264,9 @@
                               <b-badge v-if="token.price.amount" variant="success" v-b-popover.hover.bottom="token.price.amount + ' ' + token.price.currency + ' on ' + token.price.source">{{ token.price.amount }}</b-badge>
                             </font>
                           </div>
-                          <!--
-                          <font size="-2">
-                            <b-button size="sm" :id="'popover-target-' + token.tokenId" variant="link" class="m-0 p-0">
-                              {{ token.tokenId }}
-                            </b-button>
-                            <b-popover :target="'popover-target-' + token.tokenId" placement="right">
-                              <template #title>{{ token.tokenId }}</template>
-                              <b-link :href="'https://opensea.io/assets/ethereum/' + selectedContract + '/' + token.tokenId" v-b-popover.hover.bottom="'View in opensea.io'" target="_blank">
-                                OpenSea
-                              </b-link>
-                              <br />
-                              <b-link :href="'https://looksrare.org/collections/' + selectedContract + '/' + token.tokenId" v-b-popover.hover.bottom="'View in looksrare.org'" target="_blank">
-                                LooksRare
-                              </b-link>
-                              <br />
-                              <b-link :href="'https://x2y2.io/eth/' + selectedContract + '/' + token.tokenId" v-b-popover.hover.bottom="'View in x2y2.io'" target="_blank">
-                                X2Y2
-                              </b-link>
-                            </b-popover>
-                          </font>
-                          -->
-                        </div>
-                        <div class="flex-grow-1">
                         </div>
                       </b-card-text>
                     </b-card>
-                    <!-- {{ token }} -->
                   </div>
                 </b-card-group>
               </template>
@@ -621,25 +597,6 @@
             }
             return count;
           },
-          filteredMainTable() {
-            const results = [];
-            for (const [owner, data] of Object.entries(this.mainToken.owners)) {
-              results.push({ owner, count: data.length });
-            }
-            return results;
-          },
-          filteredSortedMainTable() {
-            let results = this.filteredMainTable;
-            if (this.settings.mainTable.sortOption == 'countasc') {
-              results.sort((a, b) => a.count - b.count);
-            } else if (this.settings.mainTable.sortOption == 'countdsc') {
-              results.sort((a, b) => b.count - a.count);
-            }
-            return results;
-          },
-          pagedFilteredSortedMainTable() {
-            return this.filteredSortedMainTable.slice((this.settings.mainTable.currentPage - 1) * this.settings.mainTable.pageSize, this.settings.mainTable.currentPage * this.settings.mainTable.pageSize);
-          },
         },
 
         // --- METHODS ---
@@ -719,63 +676,10 @@
             this.selectedCollections = {};
             localStorage.selectedCollections = JSON.stringify(this.selectedCollections);
           },
-          toggleSelectedMainTable(items) {
-            let someFalse = false;
-            let someTrue = false;
-            for (const item of items) {
-              if (this.selectedMainTable[item.owner]) {
-                someTrue = true;
-              } else {
-                someFalse = true;
-              }
-            }
-            for (const item of items) {
-              if (!(someTrue && !someFalse)) {
-                Vue.set(this.selectedMainTable, item.owner, true);
-              } else {
-                Vue.delete(this.selectedMainTable, item.owner);
-              }
-            }
-            localStorage.selectedMainTable = JSON.stringify(this.selectedMainTable);
-          },
-          clearSelectedMainTable() {
-            this.selectedMainTable = {};
-            localStorage.selectedMainTable = JSON.stringify(this.selectedMainTable);
-          },
           settingsUpdated() {
             localStorage.settings = JSON.stringify(this.settings);
           },
-          async addressesUpdated() {
-            const db0 = new Dexie(this.db.name);
-            db0.version(this.db.version).stores(this.db.schemaDefinition);
-            await db0.cache.put({ objectName: 'addresses', object: this.addresses }).then (function() {
-            }).catch(function(error) {
-              console.log("error: " + error);
-            });
-            db0.close();
-          },
-          async collectionsSortUpdated(contract, event) {
-            console.log("collectionsSortUpdated - contract: " + contract + ", event: " + JSON.stringify(event));
-            Vue.set(this.collections[contract], 'sort', event);
-            const db0 = new Dexie(this.db.name);
-            db0.version(this.db.version).stores(this.db.schemaDefinition);
-            await db0.cache.put({ objectName: 'collections', object: this.collections }).then (function() {
-            }).catch(function(error) {
-              console.log("error: " + error);
-            });
-            db0.close();
-          },
-          exportTxHashes() {
-            console.log("exportTxHashes");
-            var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.txHashes));
-            var link = document.createElement("a");
-            link.setAttribute("href", dataStr);
-            link.setAttribute("download", "txhashes.json");
-            document.body.appendChild(link); // Required for FF
-            link.click();
-          },
           exportOwners() {
-            console.log("exportOwners");
             const rows = [
                 ["No", "Account", "ENS", "Listed", "Owned", "TokenIds"],
             ];
@@ -803,7 +707,6 @@
             link.click();
           },
           exportTokens() {
-            console.log("exportTokens");
             const rows = [
                 ["TokenId", "Account", "ENS", "isFlagged", "Price", "Currency", "Source", "Last", "When", "Image"],
             ];
