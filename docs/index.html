@@ -610,12 +610,17 @@
           // },
           filteredOwners() {
             const contracts = [];
+            console.log("selectedCollections: " + JSON.stringify(this.selectedCollections, null, 2));
             console.log("filteredOwners: " + JSON.stringify(this.collections, null, 2));
             for (const [contract, collection] of Object.entries(this.collections)) {
               if (collection.sort != null && collection.sort.length > 0) {
                 contracts.push({ contract, sort: collection.sort });
               }
             }
+
+            const collection = Object.keys(this.selectedCollections).length == 1 && this.collections[Object.keys(this.selectedCollections)[0]] || null;
+            console.log("collection: " + JSON.stringify(collection, null, 2));
+
             contracts.sort((a, b) => ('' + a.sort).localeCompare(b.sort));
             const order = contracts.map(e => e.contract).slice(0, 15);
             console.log("filteredOwners - order: " + JSON.stringify(order));
