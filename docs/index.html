@@ -191,12 +191,12 @@
                   {{ parseInt(data.index) + ((settings.collections.currentPage - 1) * settings.collections.pageSize) + 1 }}
                 </b-form-checkbox>
               </template>
-              <template #head(sort)="data">
+              <!-- <template #head(sort)="data">
                 <span v-b-popover.hover="'Enter alphabetic sort key for inclusion into the CrossTab below, e.g., 01, 02, ...'">{{ data.label }}</span>
               </template>
               <template #cell(sort)="data">
                 <b-form-input type="text" size="sm" :value="data.item.sort" @change="collectionsSortUpdated(data.item.contract, $event)" debounce="600" style="max-width: 3.0rem;"></b-form-input>
-              </template>
+              </template> -->
               <template #cell(collection)="data">
                 <div class="d-flex flex-row">
                   <div>
@@ -450,7 +450,7 @@
           ],
           collectionsFields: [
             { key: 'number', label: '#', sortable: false, thStyle: 'width: 5%;', tdClass: 'text-truncate' },
-            { key: 'sort', label: 'Include', sortable: false, thStyle: 'width: 5%;', tdClass: 'text-truncate' },
+            // { key: 'sort', label: 'Include', sortable: false, thStyle: 'width: 5%;', tdClass: 'text-truncate' },
             { key: 'collection', label: 'Collection', sortable: false, thStyle: 'width: 90%;', tdClass: 'text-truncate' },
           ],
           mainTableFields: [
