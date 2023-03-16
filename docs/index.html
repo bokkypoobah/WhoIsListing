@@ -219,21 +219,21 @@
             </template>
             <div class="d-flex flex-wrap m-0 mx-1 mt-1 p-0">
               <div class="mt-0 pr-1">
-                <b-form-input type="text" size="sm" v-model.trim="settings.crossTab.filter" @change="settingsUpdated" debounce="600" v-b-popover.hover.top="'TODO: Filter by address/ENS'" placeholder="address fragment" style="min-width: 12.0rem;"></b-form-input>
+                <b-form-input type="text" size="sm" v-model.trim="settings.owners.filter" @change="settingsUpdated" debounce="600" v-b-popover.hover.top="'TODO: Filter by address/ENS'" placeholder="address fragment" style="min-width: 12.0rem;"></b-form-input>
               </div>
               <div class="mt-0 flex-grow-1">
               </div>
               <div class="mt-0 pr-1">
-                <b-form-select size="sm" v-model="settings.crossTab.sortOption" @change="settingsUpdated" :options="mainTableSortOptions" v-b-popover.hover.top="'Yeah. Sort'"></b-form-select>
+                <b-form-select size="sm" v-model="settings.owners.sortOption" @change="settingsUpdated" :options="mainTableSortOptions" v-b-popover.hover.top="'Yeah. Sort'"></b-form-select>
               </div>
               <div class="mt-0 pr-1">
                 <font size="-2" v-b-popover.hover.top="'# txs'">{{ filteredSortedOwners.length }}</font>
               </div>
               <div class="mt-0 pr-1">
-                <b-pagination size="sm" v-model="settings.crossTab.currentPage" @input="settingsUpdated" :total-rows="filteredSortedOwners.length" :per-page="settings.crossTab.pageSize" style="height: 0;"></b-pagination>
+                <b-pagination size="sm" v-model="settings.owners.currentPage" @input="settingsUpdated" :total-rows="filteredSortedOwners.length" :per-page="settings.owners.pageSize" style="height: 0;"></b-pagination>
               </div>
               <div class="mt-0 pl-1">
-                <b-form-select size="sm" v-model="settings.crossTab.pageSize" @change="settingsUpdated" :options="pageSizes" v-b-popover.hover.top="'Addresses page size'"></b-form-select>
+                <b-form-select size="sm" v-model="settings.owners.pageSize" @change="settingsUpdated" :options="pageSizes" v-b-popover.hover.top="'Addresses page size'"></b-form-select>
               </div>
             </div>
             <b-table small fixed striped selectable responsive hover :fields="ownersFields" :items="pagedFilteredSortedOwners" show-empty empty-html="[+] to add NFT collection, select single collection then [Sync]" head-variant="light" class="m-0 mt-1">
@@ -253,7 +253,7 @@
               -->
               <template #cell(number)="data">
                 <!-- <b-form-checkbox size="sm" :checked="selectedCollections[data.item.contract] ? 1 : 0" value="1" @change="toggleSelectedCollections([data.item])"> -->
-                  {{ parseInt(data.index) + ((settings.crossTab.currentPage - 1) * settings.crossTab.pageSize) + 1 }}
+                  {{ parseInt(data.index) + ((settings.owners.currentPage - 1) * settings.owners.pageSize) + 1 }}
                 <!-- </b-form-checkbox> -->
               </template>
               <template #cell(owner)="data">
@@ -379,7 +379,7 @@
               pageSize: 10,
               sortOption: 'sortkeyasc',
             },
-            crossTab: {
+            owners: {
               filter: null,
               currentPage: 1,
               pageSize: 100,
@@ -610,6 +610,7 @@
           // },
           filteredOwners() {
             const contracts = [];
+            console.log("filteredOwners: " + JSON.stringify(this.collections, null, 2));
             for (const [contract, collection] of Object.entries(this.collections)) {
               if (collection.sort != null && collection.sort.length > 0) {
                 contracts.push({ contract, sort: collection.sort });
@@ -648,7 +649,7 @@
           },
           filteredSortedOwners() {
             let results = this.filteredOwners;
-            // if (this.settings.crossTab.sortOption == 'countasc') {
+            // if (this.settings.owners.sortOption == 'countasc') {
             //   results.sort((a, b) => {
             //     if (a.c0 == b.c0) {
             //       if (a.c1 == b.c1) {
@@ -672,7 +673,7 @@
             //       return tokensA - tokensB;
             //     }
             //   });
-            // } else if (this.settings.crossTab.sortOption == 'countdsc') {
+            // } else if (this.settings.owners.sortOption == 'countdsc') {
             //   results.sort((a, b) => {
             //     if (a.c0 == b.c0) {
             //       if (a.c1 == b.c1) {
@@ -694,7 +695,7 @@
             return results;
           },
           pagedFilteredSortedOwners() {
-            return this.filteredSortedOwners.slice((this.settings.crossTab.currentPage - 1) * this.settings.crossTab.pageSize, this.settings.crossTab.currentPage * this.settings.crossTab.pageSize);
+            return this.filteredSortedOwners.slice((this.settings.owners.currentPage - 1) * this.settings.owners.pageSize, this.settings.owners.currentPage * this.settings.owners.pageSize);
           },
           filteredMainTable() {
             const results = [];
