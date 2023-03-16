@@ -122,7 +122,7 @@
               <!-- <div class="mt-0 flex-grow-1">
               </div> -->
               <!-- <div class="mt-0 pr-1">
-                <b-button size="sm" @click="exportAddresses" variant="link">Export</b-button>
+                <b-button size="sm" @click="exportData" variant="link">Export</b-button>
               </div> -->
               <!-- <div class="mt-0 flex-grow-1">
               </div> -->
@@ -222,6 +222,9 @@
                 <b-form-input type="text" size="sm" v-model.trim="settings.owners.filter" @change="settingsUpdated" debounce="600" v-b-popover.hover.top="'TODO: Filter by address/ENS'" placeholder="address fragment" style="min-width: 12.0rem;"></b-form-input>
               </div>
               <div class="mt-0 flex-grow-1">
+              </div>
+              <div v-if="filteredSortedOwners.length > 0" class="mt-0 pr-1">
+                <b-button size="sm" @click="exportData" variant="link" v-b-popover.hover.top="'Export data'"><b-icon-file-earmark-spreadsheet shift-v="+1" font-scale="1.2"></b-icon-file-earmark-spreadsheet></b-button>
               </div>
               <div class="mt-0 pr-1">
                 <b-form-select size="sm" v-model="settings.owners.sortOption" @change="settingsUpdated" :options="ownersSortOptions" v-b-popover.hover.top="'Yeah. Sort'"></b-form-select>
@@ -357,7 +360,7 @@
               <!-- <div class="mt-0 flex-grow-1">
               </div> -->
               <!-- <div class="mt-0 pr-1">
-                <b-button size="sm" @click="exportAddresses" variant="link">Export</b-button>
+                <b-button size="sm" @click="exportData" variant="link">Export</b-button>
               </div> -->
               <!-- <div class="mt-0 flex-grow-1">
               </div> -->
@@ -520,7 +523,7 @@
             { key: 'items', label: 'Items', sortable: false, thStyle: 'width: 55%;' },
           ],
           db: {
-            name: "nftowner089",
+            name: "whoislisting090",
             version: 1,
             schemaDefinition: {
               cache: '&objectName',
@@ -863,12 +866,31 @@
             document.body.appendChild(link); // Required for FF
             link.click();
           },
-          exportAddresses() {
-            console.log("exportAddresses");
-            var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.addresses));
+          exportData() {
+            console.log("exportData");
+            const rows = [
+                ["No", "Account", "ENS", "Listed", "Owned", "TokenIds"],
+            ];
+            let i = 1;
+            for (const result of this.filteredSortedOwners) {
+              const ens = this.ensMap[result.owner] || null;
+              const tokenIds = result.items.map(e => e.tokenId);
+              console.log(JSON.stringify(result));
+              rows.push([
+                i,
+                result.owner,
+                result.ens,
+                result.listed,
+                result.owned,
+                tokenIds.join(';'),
+              ]);
+              i++;
+            }
+            let csvContent = "data:text/tsv;charset=utf-8," + rows.map(e => e.join("\t")).join("\n");
+            var encodedUri = encodeURI(csvContent);
             var link = document.createElement("a");
-            link.setAttribute("href", dataStr);
-            link.setAttribute("download", "addresses.json");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "whoislisting_export-" + moment().format("YYYY-MM-DD-HH-mm-ss") + ".tsv");
             document.body.appendChild(link); // Required for FF
             link.click();
           },
