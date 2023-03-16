@@ -303,12 +303,6 @@
               sortOption: 'listeddsc',
               maxTokens: 10,
             },
-            mainTable: {
-              filter: null,
-              currentPage: 1,
-              pageSize: 100,
-              sortOption: 'countdsc',
-            },
           },
           searchCollections: {
             filter: null,
@@ -334,7 +328,6 @@
           secondaryData: {},
           ensMap: {},
           selectedCollections: {},
-          selectedMainTable: {},
           collectionsSortOptions: [
             { value: 'nameasc', text: '▲ Name' },
             { value: 'namedsc', text: '▼ Name' },
@@ -374,11 +367,6 @@
             { key: 'number', label: '#', sortable: false, thStyle: 'width: 5%;', tdClass: 'text-truncate' },
             // { key: 'sort', label: 'Include', sortable: false, thStyle: 'width: 5%;', tdClass: 'text-truncate' },
             { key: 'collection', label: 'Collection', sortable: false, thStyle: 'width: 90%;', tdClass: 'text-truncate' },
-          ],
-          mainTableFields: [
-            { key: 'number', label: '#', sortable: false, thStyle: 'width: 5%;', tdClass: 'text-truncate' },
-            { key: 'owner', label: 'Owner', sortable: false, thStyle: 'width: 30%;', tdClass: 'text-truncate' },
-            { key: 'collections', label: 'Collections', sortable: false, thStyle: 'width: 65%;', tdClass: 'text-truncate' },
           ],
           ownersFields: [
             { key: 'number', label: '#', sortable: false, thStyle: 'width: 5%;', tdClass: 'text-truncate' },
@@ -862,88 +850,6 @@
               const db0 = new Dexie(this.db.name);
               db0.version(this.db.version).stores(this.db.schemaDefinition);
 
-              if (action == "retrieveMainCollection") {
-                console.log("retrieveMainCollection");
-                // let continuation = null;
-                // this.sync.completed = 0;
-                // this.sync.total = null;
-                // this.sync.section = "Main collection";
-                // const mainTokens = {};
-                // this.mainToken.collection.name = null;
-                // do {
-                //   let url = "https://api.reservoir.tools/tokens/v5?contract=" + this.settings.mainCollection + "&limit=100" +
-                //     (continuation != null ? "&continuation=" + continuation : '');
-                //   console.log("url: " + url);
-                //   const data = await fetch(url)
-                //     .then(handleErrors)
-                //     .then(response => response.json())
-                //     .catch(function(error) {
-                //        console.log("ERROR - updateCollection: " + error);
-                //        // state.sync.error = true;
-                //        return [];
-                //     });
-                //   continuation = data.continuation;
-                //   if (data && data.tokens) {
-                //     for (const tokenData of data.tokens) {
-                //       const token = tokenData.token;
-                //       mainTokens[token.tokenId] = {
-                //         owner: token.owner,
-                //         image: token.image,
-                //       };
-                //       if (this.mainToken.collection.name == null) {
-                //         this.mainToken.collection.name = token.collection.name;
-                //         this.mainToken.collection.image = token.collection.image;
-                //         this.mainToken.collection.slug = token.collection.slug;
-                //       }
-                //     }
-                //   }
-                //   this.sync.completed = Object.keys(mainTokens).length;
-                //   await delay(1500); // TODO: Adjust to avoid error 429 Too Many Requests. Fails at 200ms
-                // } while (continuation != null /*&& !state.halt && !state.sync.error */);
-                //
-                // const mainOwners = {};
-                // for (const [tokenId, data] of Object.entries(mainTokens)) {
-                //   if (!(data.owner in mainOwners)) {
-                //     mainOwners[data.owner] = [];
-                //   }
-                //   mainOwners[data.owner].push(tokenId);
-                // }
-                //
-                // this.sync.completed = 0;
-                // const addresses = Object.keys(mainOwners);
-                // this.sync.total = addresses.length;
-                // this.sync.section = "ENS Names";
-                // const ensMap = {};
-                // for (let i = 0; i < addresses.length & !this.sync.halt; i += ENSOWNERBATCHSIZE) {
-                //   const batch = addresses.slice(i, parseInt(i) + ENSOWNERBATCHSIZE);
-                //   const allnames = await ensReverseRecordsContract.getNames(batch);
-                //   for (let j = 0; j < batch.length; j++) {
-                //     const address = batch[j];
-                //     const name = allnames[j];
-                //     ensMap[address] = name != null && name.length > 0 ? name : address;
-                //     // const normalized = normalize(address);
-                //   }
-                //   this.sync.completed = parseInt(this.sync.completed) + batch.length;
-                // }
-                // this.ensMap = ensMap;
-                // await db0.cache.put({ objectName: 'ensMap', object: ensMap }).then (function() {
-                // }).catch(function(error) {
-                //   console.log("error: " + error);
-                // });
-                // this.mainToken.tokens = mainTokens;
-                // this.mainToken.owners = mainOwners;
-                // await db0.cache.put({ objectName: 'mainToken', object: this.mainToken }).then (function() {
-                // }).catch(function(error) {
-                //   console.log("error: " + error);
-                // });
-                // this.secondaryData = {};
-                // await db0.cache.put({ objectName: 'secondaryData', object: this.secondaryData }).then (function() {
-                // }).catch(function(error) {
-                //   console.log("error: " + error);
-                // });
-                // this.sync.section = null;
-              }
-
               if (action == "syncCollections") {
                 console.log("syncCollections");
                 let contracts = [];
@@ -1085,74 +991,6 @@
                 });
               }
 
-              if (action == "retrieveSecondaryCollection") {
-                // console.log("retrieveSecondaryCollection");
-                // let owners = [];
-                // if (Object.keys(this.selectedMainTable).length > 0) {
-                //   owners = Object.keys(this.selectedMainTable);
-                // } else {
-                //   for (const record of this.filteredSortedMainTable) {
-                //     if (!(record.owner in this.secondaryData)) {
-                //       owners.push(record.owner);
-                //     }
-                //   }
-                // }
-                // console.log("owners: " + JSON.stringify(owners));
-                //
-                // this.sync.completed = 0;
-                // this.sync.total = owners.count;
-                // this.sync.section = "Secondary collection";
-                // for (let owner of owners) {
-                //   console.log("Processing: " + owner);
-                //   Vue.set(this.secondaryData, owner, {});
-                //   let stop = false;
-                //   const LIMIT = 100;
-                //   const MAXLIMIT = 10000;
-                //   for (let offset = 0; offset < MAXLIMIT && !stop; offset = parseInt(offset) + LIMIT) {
-                //     let url = "https://api.reservoir.tools/users/" + owner + "/tokens/v5?sortBy=acquiredAt&sortDirection=desc&offset=" + offset + "&limit=" + LIMIT + "&includeTopBid=false";
-                //     console.log("url: " + url);
-                //     const data = await fetch(url)
-                //       .then(handleErrors)
-                //       .then(response => response.json())
-                //       .catch(function(error) {
-                //          console.log("ERROR - updateCollection: " + error);
-                //          // state.sync.error = true;
-                //          return [];
-                //       });
-                //     if (data && data.tokens && data.tokens.length > 0) {
-                //       for (const tokenData of data.tokens) {
-                //         const contract = tokenData.token.contract;
-                //         const tokenId = tokenData.token.tokenId;
-                //         const name = tokenData.token.name;
-                //         const image = tokenData.token.image;
-                //         const collectionName = tokenData.token.collection.name;
-                //         const collectionImage = tokenData.token.collection.imageUrl;
-                //         if (!(contract in this.secondaryData[owner])) {
-                //           Vue.set(this.secondaryData[owner], contract, {
-                //             collectionName,
-                //             collectionImage,
-                //             tokens: {},
-                //           });
-                //         }
-                //         Vue.set(this.secondaryData[owner][contract].tokens, tokenId, { tokenId, name, image });
-                //       }
-                //     } else {
-                //       stop = true;
-                //     }
-                //     await delay(2000); // TODO: Adjust to avoid error 429 Too Many Requests. Fails at 200ms
-                //   }
-                //   await delay(2000); // TODO: Adjust to avoid error 429 Too Many Requests. Fails at 200ms
-                //   this.sync.completed = parseInt(this.sync.completed) + 1;
-                //   if (this.sync.halt) {
-                //     break;
-                //   }
-                // }
-                // await db0.cache.put({ objectName: 'secondaryData', object: this.secondaryData }).then (function() {
-                // }).catch(function(error) {
-                //   console.log("error: " + error);
-                // });
-              }
-
               db0.close();
               this.sync.section = null;
               this.sync.halt = false;
@@ -1168,9 +1006,6 @@
           if ('selectedCollections' in localStorage) {
             this.selectedCollections = JSON.parse(localStorage.selectedCollections);
             console.log("mounted - selectedCollections: " + JSON.stringify(this.selectedCollections, null, 2));
-          }
-          if ('selectedMainTable' in localStorage) {
-            this.selectedMainTable = JSON.parse(localStorage.selectedMainTable);
           }
           // if ('settings' in localStorage) {
           //   // console.log("mounted - before - this.settings: " + JSON.stringify(this.settings, null, 2));
