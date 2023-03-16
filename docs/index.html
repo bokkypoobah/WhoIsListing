@@ -230,8 +230,8 @@
               <template #cell(items)="data">
                 <b-card-group deck class="m-1 ml-0 p-0">
                   <div v-for="token in data.item.items.slice(0, 10)">
-                    <b-card body-class="p-0" header-class="p-1" img-top class="m-1 p-0 border-0" style="max-width: 4rem;">
-                      <b-avatar button rounded size="4rem" :src="token.image"></b-avatar>
+                    <b-card body-class="p-0" header-class="p-1" img-top class="m-1 p-0 border-0" style="max-width: 5rem;">
+                      <b-avatar button rounded size="5rem" :src="token.image"></b-avatar>
                       <b-card-text class="text-right">
                         <div class="d-flex justify-content-between m-0 p-0">
                           <font size="-2">
@@ -373,10 +373,10 @@
           ],
           ownersFields: [
             { key: 'number', label: '#', sortable: false, thStyle: 'width: 5%;', tdClass: 'text-truncate' },
-            { key: 'owner', label: 'Owner', sortable: false, thStyle: 'width: 20%;', tdClass: 'text-truncate' },
-            { key: 'listed', label: 'Listed', sortable: false, thStyle: 'width: 10%;', thClass: 'text-right', tdClass: 'text-right' },
-            { key: 'owned', label: 'Owned', sortable: false, thStyle: 'width: 10%;', thClass: 'text-right', tdClass: 'text-right' },
-            { key: 'items', label: 'Items (max 10)', sortable: false, thStyle: 'width: 55%;' },
+            { key: 'owner', label: 'Owner', sortable: false, thStyle: 'width: 15%;', tdClass: 'text-truncate' },
+            { key: 'listed', label: 'Listed', sortable: false, thStyle: 'width: 5%;', thClass: 'text-right', tdClass: 'text-right' },
+            { key: 'owned', label: 'Owned', sortable: false, thStyle: 'width: 5%;', thClass: 'text-right', tdClass: 'text-right' },
+            { key: 'items', label: 'Items (max 10)', sortable: false, thStyle: 'width: 70%;' },
           ],
           db: {
             name: "whoislisting091",
