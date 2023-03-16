@@ -212,7 +212,7 @@
                 <b-form-select size="sm" v-model="settings.owners.maxTokens" @change="settingsUpdated" :options="pageSizes" v-b-popover.hover.top="'Max tokens to display'"></b-form-select>
               </div>
             </div>
-            <b-table small fixed striped selectable responsive hover :fields="ownersFields" :items="pagedFilteredSortedOwners" show-empty empty-html="[+] to add NFT collection, select single collection then [Sync].<br /><br />Note: ENS names only retrieved for the last synced collection" head-variant="light" class="m-0 mt-1">
+            <b-table small fixed striped responsive hover :fields="ownersFields" :items="pagedFilteredSortedOwners" show-empty empty-html="[+] to add NFT collection, select single collection then [Sync].<br /><br />Note: ENS names only retrieved for the last synced collection" head-variant="light" class="m-0 mt-1">
               <template #cell(number)="data">
                 {{ parseInt(data.index) + ((settings.owners.currentPage - 1) * settings.owners.pageSize) + 1 }}
               </template>
@@ -237,6 +237,19 @@
                       <b-avatar button rounded size="5rem" :src="token.image"></b-avatar>
                       <b-card-text class="text-right">
                         <div class="d-flex justify-content-between m-0 p-0">
+                          <div>
+                            <font size="-1">
+                              <b-badge variant="light" v-b-popover.hover.bottom="'#' + token.tokenId">{{ token.tokenId }}</b-badge>
+                            </font>
+                          </div>
+                          <div class="flex-grow-1">
+                          </div>
+                          <div>
+                            <font size="-1">
+                              <b-badge v-if="token.price.amount" variant="success" v-b-popover.hover.bottom="token.price.amount + ' ' + token.price.currency">{{ token.price.amount }}</b-badge>
+                            </font>
+                          </div>
+                          <!--
                           <font size="-2">
                             <b-button size="sm" :id="'popover-target-' + token.tokenId" variant="link" class="m-0 p-0">
                               {{ token.tokenId }}
@@ -256,6 +269,7 @@
                               </b-link>
                             </b-popover>
                           </font>
+                          -->
                         </div>
                         <div class="flex-grow-1">
                         </div>
@@ -380,7 +394,7 @@
             { key: 'owner', label: 'Owner', sortable: false, thStyle: 'width: 15%;', tdClass: 'text-truncate' },
             { key: 'listed', label: 'Listed', sortable: false, thStyle: 'width: 5%;', thClass: 'text-right', tdClass: 'text-right' },
             { key: 'owned', label: 'Owned', sortable: false, thStyle: 'width: 5%;', thClass: 'text-right', tdClass: 'text-right' },
-            { key: 'items', label: 'Items (max 10)', sortable: false, thStyle: 'width: 70%;' },
+            { key: 'items', label: 'Items', sortable: false, thStyle: 'width: 70%;' },
           ],
           db: {
             name: "whoislisting091",
