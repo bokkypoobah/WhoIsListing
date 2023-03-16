@@ -85,18 +85,6 @@
               <div class="mt-0 pr-1">
                 <b-button size="sm" :disabled="sync.section != null || Object.keys(selectedCollections).length == 0" @click="deleteCollections" variant="link" v-b-popover.hover="'Delete selected collections'"><b-icon-trash style="color: #ff0000;" shift-v="+1" font-scale="1.0"></b-icon-trash></b-button>
               </div>
-              <!-- <div class="mt-0 pr-1">
-                <b-button size="sm" :disabled="sync.section != null && searchCollections.filter != null && searchCollections.filter.length > 0" @click="doSearchCollections" variant="link" v-b-popover.hover.top="'Search for collection name'">Search</b-button>
-              </div> -->
-              <!-- <div class="mt-0 pr-1">
-                <b-button size="sm" :disabled="sync.section != null || settings.mainCollection == null || settings.mainCollection.length == 0" @click="processIt('retrieveMainCollection')" variant="primary" v-b-popover.hover.top="'Retrieve main collection data'">Retrieve Main</b-button>
-              </div>
-              <div class="mt-0 pr-1">
-                <b-button size="sm" :disabled="sync.section != null || filteredSortedMainTable.length == 0" @click="processIt('retrieveSecondaryCollection')" variant="primary" v-b-popover.hover.top="'Retrieve secondary collection data'">Retrieve Secondary</b-button>
-              </div> -->
-              <!-- <div class="mt-0 pr-1">
-                <b-form-input type="text" size="sm" v-model.trim="settings.addressTable.searchAddresses" @change="settingsUpdated" debounce="600" v-b-popover.hover.top="'Filter by partial address, name'" placeholder="🔍 address"></b-form-input>
-              </div> -->
               <div class="mt-0 flex-grow-1">
               </div>
               <div class="mt-1" style="width: 200px;">
@@ -111,21 +99,6 @@
               </div>
               <div class="mt-0 flex-grow-1">
               </div>
-              <!-- <div class="mt-0 flex-grow-1">
-              </div>
-              <div class="mt-0 pr-0">
-                <b-button size="sm" :pressed.sync="settings.addAddresses" @click="settingsUpdated" variant="link" v-b-popover.hover.top="'Add addresses, tx hashes, Etherscan API key'"><span v-if="settings.addAddresses"><b-icon-plus-square-fill shift-v="+1" font-scale="1.0"></b-icon-plus-square-fill></span><span v-else><b-icon-plus-square shift-v="+1" font-scale="1.0"></b-icon-plus-square></span></b-button>
-              </div>
-              <div class="mt-0 pr-1">
-                <b-button size="sm" :pressed.sync="settings.editAddresses" @click="settingsUpdated" :variant="settings.editAddresses ? 'danger' : 'link'" v-b-popover.hover.top="settings.editAddresses ? 'End editing address attributes' : 'Edit address attributes'"><b-icon-pencil shift-v="+1" font-scale="1.0"></b-icon-pencil></b-button>
-              </div> -->
-              <!-- <div class="mt-0 flex-grow-1">
-              </div> -->
-              <!-- <div class="mt-0 pr-1">
-                <b-button size="sm" @click="exportOwners" variant="link">Export</b-button>
-              </div> -->
-              <!-- <div class="mt-0 flex-grow-1">
-              </div> -->
               <div class="mt-0 pr-1">
                 <b-form-select size="sm" v-model="settings.collections.sortOption" @change="settingsUpdated" :options="collectionsSortOptions" v-b-popover.hover.top="'Yeah. Sort'"></b-form-select>
               </div>
@@ -191,12 +164,6 @@
                   {{ parseInt(data.index) + ((settings.collections.currentPage - 1) * settings.collections.pageSize) + 1 }}
                 </b-form-checkbox>
               </template>
-              <!-- <template #head(sort)="data">
-                <span v-b-popover.hover="'Enter alphabetic sort key for inclusion into the CrossTab below, e.g., 01, 02, ...'">{{ data.label }}</span>
-              </template>
-              <template #cell(sort)="data">
-                <b-form-input type="text" size="sm" :value="data.item.sort" @change="collectionsSortUpdated(data.item.contract, $event)" debounce="600" style="max-width: 3.0rem;"></b-form-input>
-              </template> -->
               <template #cell(collection)="data">
                 <div class="d-flex flex-row">
                   <div>
@@ -276,23 +243,14 @@
                               <b-link :href="'https://opensea.io/assets/ethereum/' + selectedContract + '/' + token.tokenId" v-b-popover.hover.bottom="'View in opensea.io'" target="_blank">
                                 OpenSea
                               </b-link>
-                              <!--
-                              <b-link :href="'https://opensea.io/assets/ethereum/' + contractAddress + '/' + tokenId" v-b-popover.hover.bottom="'View in opensea.io'" target="_blank">
-                                OpenSea
-                              </b-link>
                               <br />
-                              <b-link :href="'https://looksrare.org/collections/' + contractAddress + '/' + tokenId" v-b-popover.hover.bottom="'View in looksrare.org'" target="_blank">
+                              <b-link :href="'https://looksrare.org/collections/' + selectedContract + '/' + token.tokenId" v-b-popover.hover.bottom="'View in looksrare.org'" target="_blank">
                                 LooksRare
                               </b-link>
                               <br />
-                              <b-link :href="'https://x2y2.io/eth/' + contractAddress + '/' + tokenId" v-b-popover.hover.bottom="'View in x2y2.io'" target="_blank">
+                              <b-link :href="'https://x2y2.io/eth/' + selectedContract + '/' + token.tokenId" v-b-popover.hover.bottom="'View in x2y2.io'" target="_blank">
                                 X2Y2
                               </b-link>
-                              <br />
-                              <b-link :href="'https://app.indeliblelabs.io/api/png/' + contractAddress + '/' + tokenId" v-b-popover.hover.bottom="'Server generated PNG'" target="_blank">
-                                PNG Image
-                              </b-link>
-                              -->
                             </b-popover>
                           </font>
                         </div>
@@ -421,7 +379,7 @@
             { key: 'items', label: 'Items (max 10)', sortable: false, thStyle: 'width: 55%;' },
           ],
           db: {
-            name: "whoislisting090",
+            name: "whoislisting091",
             version: 1,
             schemaDefinition: {
               cache: '&objectName',
@@ -562,7 +520,7 @@
               for (const [owner, ownerInfo] of Object.entries(owners)) {
                 let listed = 0;
                 for (const token of ownerInfo.tokens) {
-                  if (token.price) {
+                  if (token.price && token.price.amount) {
                     listed++;
                   }
                 }
@@ -814,7 +772,7 @@
           exportTokens() {
             console.log("exportTokens");
             const rows = [
-                ["TokenId", "Account", "ENS", "isFlagged", "Price", "Currency", "Image"],
+                ["TokenId", "Account", "ENS", "isFlagged", "Price", "Currency", "Source", "Last", "When", "Image"],
             ];
             const collection = Object.keys(this.selectedCollections).length == 1 && this.collections[Object.keys(this.selectedCollections)[0]] || null;
             if (collection) {
@@ -825,8 +783,11 @@
                   tokenInfo.owner,
                   ens,
                   tokenInfo.isFlagged,
-                  tokenInfo.price && tokenInfo.price.amount && tokenInfo.price.amount.native || '',
-                  tokenInfo.price && tokenInfo.price.currency && tokenInfo.price.currency.symbol || '',
+                  tokenInfo.price && tokenInfo.price.amount || '',
+                  tokenInfo.price && tokenInfo.price.currency || '',
+                  tokenInfo.price && tokenInfo.price.source || '',
+                  tokenInfo.last && tokenInfo.last.amount || '',
+                  tokenInfo.last && tokenInfo.last.timestamp && moment.unix(tokenInfo.last.timestamp).format("HH:mm:ss DD-MM-YYYY") || '',
                   tokenInfo.image,
                 ]);
               }
@@ -967,84 +928,84 @@
 
               if (action == "retrieveMainCollection") {
                 console.log("retrieveMainCollection");
-                let continuation = null;
-                this.sync.completed = 0;
-                this.sync.total = null;
-                this.sync.section = "Main collection";
-                const mainTokens = {};
-                this.mainToken.collection.name = null;
-                do {
-                  let url = "https://api.reservoir.tools/tokens/v5?contract=" + this.settings.mainCollection + "&limit=100" +
-                    (continuation != null ? "&continuation=" + continuation : '');
-                  console.log("url: " + url);
-                  const data = await fetch(url)
-                    .then(handleErrors)
-                    .then(response => response.json())
-                    .catch(function(error) {
-                       console.log("ERROR - updateCollection: " + error);
-                       // state.sync.error = true;
-                       return [];
-                    });
-                  continuation = data.continuation;
-                  if (data && data.tokens) {
-                    for (const tokenData of data.tokens) {
-                      const token = tokenData.token;
-                      mainTokens[token.tokenId] = {
-                        owner: token.owner,
-                        image: token.image,
-                      };
-                      if (this.mainToken.collection.name == null) {
-                        this.mainToken.collection.name = token.collection.name;
-                        this.mainToken.collection.image = token.collection.image;
-                        this.mainToken.collection.slug = token.collection.slug;
-                      }
-                    }
-                  }
-                  this.sync.completed = Object.keys(mainTokens).length;
-                  await delay(1500); // TODO: Adjust to avoid error 429 Too Many Requests. Fails at 200ms
-                } while (continuation != null /*&& !state.halt && !state.sync.error */);
-
-                const mainOwners = {};
-                for (const [tokenId, data] of Object.entries(mainTokens)) {
-                  if (!(data.owner in mainOwners)) {
-                    mainOwners[data.owner] = [];
-                  }
-                  mainOwners[data.owner].push(tokenId);
-                }
-
-                this.sync.completed = 0;
-                const addresses = Object.keys(mainOwners);
-                this.sync.total = addresses.length;
-                this.sync.section = "ENS Names";
-                const ensMap = {};
-                for (let i = 0; i < addresses.length & !this.sync.halt; i += ENSOWNERBATCHSIZE) {
-                  const batch = addresses.slice(i, parseInt(i) + ENSOWNERBATCHSIZE);
-                  const allnames = await ensReverseRecordsContract.getNames(batch);
-                  for (let j = 0; j < batch.length; j++) {
-                    const address = batch[j];
-                    const name = allnames[j];
-                    ensMap[address] = name != null && name.length > 0 ? name : address;
-                    // const normalized = normalize(address);
-                  }
-                  this.sync.completed = parseInt(this.sync.completed) + batch.length;
-                }
-                this.ensMap = ensMap;
-                await db0.cache.put({ objectName: 'ensMap', object: ensMap }).then (function() {
-                }).catch(function(error) {
-                  console.log("error: " + error);
-                });
-                this.mainToken.tokens = mainTokens;
-                this.mainToken.owners = mainOwners;
-                await db0.cache.put({ objectName: 'mainToken', object: this.mainToken }).then (function() {
-                }).catch(function(error) {
-                  console.log("error: " + error);
-                });
-                this.secondaryData = {};
-                await db0.cache.put({ objectName: 'secondaryData', object: this.secondaryData }).then (function() {
-                }).catch(function(error) {
-                  console.log("error: " + error);
-                });
-                this.sync.section = null;
+                // let continuation = null;
+                // this.sync.completed = 0;
+                // this.sync.total = null;
+                // this.sync.section = "Main collection";
+                // const mainTokens = {};
+                // this.mainToken.collection.name = null;
+                // do {
+                //   let url = "https://api.reservoir.tools/tokens/v5?contract=" + this.settings.mainCollection + "&limit=100" +
+                //     (continuation != null ? "&continuation=" + continuation : '');
+                //   console.log("url: " + url);
+                //   const data = await fetch(url)
+                //     .then(handleErrors)
+                //     .then(response => response.json())
+                //     .catch(function(error) {
+                //        console.log("ERROR - updateCollection: " + error);
+                //        // state.sync.error = true;
+                //        return [];
+                //     });
+                //   continuation = data.continuation;
+                //   if (data && data.tokens) {
+                //     for (const tokenData of data.tokens) {
+                //       const token = tokenData.token;
+                //       mainTokens[token.tokenId] = {
+                //         owner: token.owner,
+                //         image: token.image,
+                //       };
+                //       if (this.mainToken.collection.name == null) {
+                //         this.mainToken.collection.name = token.collection.name;
+                //         this.mainToken.collection.image = token.collection.image;
+                //         this.mainToken.collection.slug = token.collection.slug;
+                //       }
+                //     }
+                //   }
+                //   this.sync.completed = Object.keys(mainTokens).length;
+                //   await delay(1500); // TODO: Adjust to avoid error 429 Too Many Requests. Fails at 200ms
+                // } while (continuation != null /*&& !state.halt && !state.sync.error */);
+                //
+                // const mainOwners = {};
+                // for (const [tokenId, data] of Object.entries(mainTokens)) {
+                //   if (!(data.owner in mainOwners)) {
+                //     mainOwners[data.owner] = [];
+                //   }
+                //   mainOwners[data.owner].push(tokenId);
+                // }
+                //
+                // this.sync.completed = 0;
+                // const addresses = Object.keys(mainOwners);
+                // this.sync.total = addresses.length;
+                // this.sync.section = "ENS Names";
+                // const ensMap = {};
+                // for (let i = 0; i < addresses.length & !this.sync.halt; i += ENSOWNERBATCHSIZE) {
+                //   const batch = addresses.slice(i, parseInt(i) + ENSOWNERBATCHSIZE);
+                //   const allnames = await ensReverseRecordsContract.getNames(batch);
+                //   for (let j = 0; j < batch.length; j++) {
+                //     const address = batch[j];
+                //     const name = allnames[j];
+                //     ensMap[address] = name != null && name.length > 0 ? name : address;
+                //     // const normalized = normalize(address);
+                //   }
+                //   this.sync.completed = parseInt(this.sync.completed) + batch.length;
+                // }
+                // this.ensMap = ensMap;
+                // await db0.cache.put({ objectName: 'ensMap', object: ensMap }).then (function() {
+                // }).catch(function(error) {
+                //   console.log("error: " + error);
+                // });
+                // this.mainToken.tokens = mainTokens;
+                // this.mainToken.owners = mainOwners;
+                // await db0.cache.put({ objectName: 'mainToken', object: this.mainToken }).then (function() {
+                // }).catch(function(error) {
+                //   console.log("error: " + error);
+                // });
+                // this.secondaryData = {};
+                // await db0.cache.put({ objectName: 'secondaryData', object: this.secondaryData }).then (function() {
+                // }).catch(function(error) {
+                //   console.log("error: " + error);
+                // });
+                // this.sync.section = null;
               }
 
               if (action == "syncCollections") {
@@ -1061,7 +1022,7 @@
                 }
                 console.log("contracts: " + JSON.stringify(contracts));
                 for (let contract of contracts) {
-                  console.log("Processing: " + contract + " " + JSON.stringify(this.collections[contract]));
+                  console.log("Processing: " + contract + " " + (this.collections[contract] && this.collections[contract].name || '?'));
 
                   let continuation = null;
                   this.sync.completed = 0;
@@ -1083,14 +1044,47 @@
                     continuation = data.continuation;
                     if (data && data.tokens) {
                       for (const tokenData of data.tokens) {
-                        // console.log("tokenData: " + JSON.stringify(tokenData, null, 2));
                         const token = tokenData.token;
+
+                        let last = null;
+                        if (token.lastSell && token.lastBuy) {
+                          if (token.lastSell.timestamp > token.lastBuy.timestamp) {
+                            last = {
+                              amount: token.lastSell.value,
+                              timestamp: token.lastSell.timestamp,
+                            };
+                          } else {
+                            last = {
+                              amount: token.lastBuy.value,
+                              timestamp: token.lastBuy.timestamp,
+                            };
+                          }
+                        } else if (token.lastSell) {
+                          last = {
+                            amount: token.lastSell.value,
+                            timestamp: token.lastSell.timestamp,
+                          };
+                        } else if (token.lastBuy) {
+                          last = {
+                            amount: token.lastBuy.value,
+                            timestamp: token.lastBuy.timestamp,
+                          };
+                        }
                         tokens[token.tokenId] = {
                           owner: token.owner,
                           image: token.image,
                           isFlagged: token.isFlagged,
-                          price: tokenData.market.floorAsk.price || null,
+                          price: {
+                            currency: tokenData.market.floorAsk.price && tokenData.market.floorAsk.price.currency && tokenData.market.floorAsk.price.currency.symbol || null,
+                            amount: tokenData.market.floorAsk.price && tokenData.market.floorAsk.price.amount && tokenData.market.floorAsk.price.amount.native || null,
+                            source: tokenData.market.floorAsk.source && tokenData.market.floorAsk.source.name || null,
+                          },
+                          last,
                         };
+                        // if (tokenData.market.floorAsk.price) {
+                        //   console.log("tokenData: " + JSON.stringify(tokenData, null, 2));
+                        //   console.log("  " + JSON.stringify(tokens[token.tokenId], null, 2));
+                        // }
                       }
                     }
                     this.sync.completed = Object.keys(tokens).length;
@@ -1139,71 +1133,71 @@
               }
 
               if (action == "retrieveSecondaryCollection") {
-                console.log("retrieveSecondaryCollection");
-                let owners = [];
-                if (Object.keys(this.selectedMainTable).length > 0) {
-                  owners = Object.keys(this.selectedMainTable);
-                } else {
-                  for (const record of this.filteredSortedMainTable) {
-                    if (!(record.owner in this.secondaryData)) {
-                      owners.push(record.owner);
-                    }
-                  }
-                }
-                console.log("owners: " + JSON.stringify(owners));
-
-                this.sync.completed = 0;
-                this.sync.total = owners.count;
-                this.sync.section = "Secondary collection";
-                for (let owner of owners) {
-                  console.log("Processing: " + owner);
-                  Vue.set(this.secondaryData, owner, {});
-                  let stop = false;
-                  const LIMIT = 100;
-                  const MAXLIMIT = 10000;
-                  for (let offset = 0; offset < MAXLIMIT && !stop; offset = parseInt(offset) + LIMIT) {
-                    let url = "https://api.reservoir.tools/users/" + owner + "/tokens/v5?sortBy=acquiredAt&sortDirection=desc&offset=" + offset + "&limit=" + LIMIT + "&includeTopBid=false";
-                    console.log("url: " + url);
-                    const data = await fetch(url)
-                      .then(handleErrors)
-                      .then(response => response.json())
-                      .catch(function(error) {
-                         console.log("ERROR - updateCollection: " + error);
-                         // state.sync.error = true;
-                         return [];
-                      });
-                    if (data && data.tokens && data.tokens.length > 0) {
-                      for (const tokenData of data.tokens) {
-                        const contract = tokenData.token.contract;
-                        const tokenId = tokenData.token.tokenId;
-                        const name = tokenData.token.name;
-                        const image = tokenData.token.image;
-                        const collectionName = tokenData.token.collection.name;
-                        const collectionImage = tokenData.token.collection.imageUrl;
-                        if (!(contract in this.secondaryData[owner])) {
-                          Vue.set(this.secondaryData[owner], contract, {
-                            collectionName,
-                            collectionImage,
-                            tokens: {},
-                          });
-                        }
-                        Vue.set(this.secondaryData[owner][contract].tokens, tokenId, { tokenId, name, image });
-                      }
-                    } else {
-                      stop = true;
-                    }
-                    await delay(2000); // TODO: Adjust to avoid error 429 Too Many Requests. Fails at 200ms
-                  }
-                  await delay(2000); // TODO: Adjust to avoid error 429 Too Many Requests. Fails at 200ms
-                  this.sync.completed = parseInt(this.sync.completed) + 1;
-                  if (this.sync.halt) {
-                    break;
-                  }
-                }
-                await db0.cache.put({ objectName: 'secondaryData', object: this.secondaryData }).then (function() {
-                }).catch(function(error) {
-                  console.log("error: " + error);
-                });
+                // console.log("retrieveSecondaryCollection");
+                // let owners = [];
+                // if (Object.keys(this.selectedMainTable).length > 0) {
+                //   owners = Object.keys(this.selectedMainTable);
+                // } else {
+                //   for (const record of this.filteredSortedMainTable) {
+                //     if (!(record.owner in this.secondaryData)) {
+                //       owners.push(record.owner);
+                //     }
+                //   }
+                // }
+                // console.log("owners: " + JSON.stringify(owners));
+                //
+                // this.sync.completed = 0;
+                // this.sync.total = owners.count;
+                // this.sync.section = "Secondary collection";
+                // for (let owner of owners) {
+                //   console.log("Processing: " + owner);
+                //   Vue.set(this.secondaryData, owner, {});
+                //   let stop = false;
+                //   const LIMIT = 100;
+                //   const MAXLIMIT = 10000;
+                //   for (let offset = 0; offset < MAXLIMIT && !stop; offset = parseInt(offset) + LIMIT) {
+                //     let url = "https://api.reservoir.tools/users/" + owner + "/tokens/v5?sortBy=acquiredAt&sortDirection=desc&offset=" + offset + "&limit=" + LIMIT + "&includeTopBid=false";
+                //     console.log("url: " + url);
+                //     const data = await fetch(url)
+                //       .then(handleErrors)
+                //       .then(response => response.json())
+                //       .catch(function(error) {
+                //          console.log("ERROR - updateCollection: " + error);
+                //          // state.sync.error = true;
+                //          return [];
+                //       });
+                //     if (data && data.tokens && data.tokens.length > 0) {
+                //       for (const tokenData of data.tokens) {
+                //         const contract = tokenData.token.contract;
+                //         const tokenId = tokenData.token.tokenId;
+                //         const name = tokenData.token.name;
+                //         const image = tokenData.token.image;
+                //         const collectionName = tokenData.token.collection.name;
+                //         const collectionImage = tokenData.token.collection.imageUrl;
+                //         if (!(contract in this.secondaryData[owner])) {
+                //           Vue.set(this.secondaryData[owner], contract, {
+                //             collectionName,
+                //             collectionImage,
+                //             tokens: {},
+                //           });
+                //         }
+                //         Vue.set(this.secondaryData[owner][contract].tokens, tokenId, { tokenId, name, image });
+                //       }
+                //     } else {
+                //       stop = true;
+                //     }
+                //     await delay(2000); // TODO: Adjust to avoid error 429 Too Many Requests. Fails at 200ms
+                //   }
+                //   await delay(2000); // TODO: Adjust to avoid error 429 Too Many Requests. Fails at 200ms
+                //   this.sync.completed = parseInt(this.sync.completed) + 1;
+                //   if (this.sync.halt) {
+                //     break;
+                //   }
+                // }
+                // await db0.cache.put({ objectName: 'secondaryData', object: this.secondaryData }).then (function() {
+                // }).catch(function(error) {
+                //   console.log("error: " + error);
+                // });
               }
 
               db0.close();
