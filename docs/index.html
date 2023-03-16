@@ -260,7 +260,10 @@
                 <!-- </b-form-checkbox> -->
               </template>
               <template #cell(owner)="data">
-                {{ ensOrAddress(data.item.owner) }}
+                <b-link :href="'https://opensea.io/' + data.item.owner" v-b-popover.hover.bottom="'View in opensea.io'" target="_blank">
+                  {{ ensOrAddress(data.item.owner) }}
+                </b-link>
+
               </template>
               <template #cell(listed)="data">
                 {{ data.item.listed }}
@@ -520,7 +523,7 @@
             { key: 'owner', label: 'Owner', sortable: false, thStyle: 'width: 20%;', tdClass: 'text-truncate' },
             { key: 'listed', label: 'Listed', sortable: false, thStyle: 'width: 10%;', thClass: 'text-right', tdClass: 'text-right' },
             { key: 'owned', label: 'Owned', sortable: false, thStyle: 'width: 10%;', thClass: 'text-right', tdClass: 'text-right' },
-            { key: 'items', label: 'Items', sortable: false, thStyle: 'width: 55%;' },
+            { key: 'items', label: 'Items (max 10)', sortable: false, thStyle: 'width: 55%;' },
           ],
           db: {
             name: "whoislisting090",
