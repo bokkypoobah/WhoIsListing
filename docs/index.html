@@ -215,7 +215,7 @@
 
           <b-card class="m-0 p-0 border-0" no-body body-class="m-1 p-0" header-class="m-0 p-2">
             <template #header>
-              CrossTab
+              Owners
             </template>
             <div class="d-flex flex-wrap m-0 mx-1 mt-1 p-0">
               <div class="mt-0 pr-1">
@@ -227,16 +227,17 @@
                 <b-form-select size="sm" v-model="settings.crossTab.sortOption" @change="settingsUpdated" :options="mainTableSortOptions" v-b-popover.hover.top="'Yeah. Sort'"></b-form-select>
               </div>
               <div class="mt-0 pr-1">
-                <font size="-2" v-b-popover.hover.top="'# txs'">{{ filteredSortedCrossTab.length }}</font>
+                <font size="-2" v-b-popover.hover.top="'# txs'">{{ filteredSortedOwners.length }}</font>
               </div>
               <div class="mt-0 pr-1">
-                <b-pagination size="sm" v-model="settings.crossTab.currentPage" @input="settingsUpdated" :total-rows="filteredSortedCrossTab.length" :per-page="settings.crossTab.pageSize" style="height: 0;"></b-pagination>
+                <b-pagination size="sm" v-model="settings.crossTab.currentPage" @input="settingsUpdated" :total-rows="filteredSortedOwners.length" :per-page="settings.crossTab.pageSize" style="height: 0;"></b-pagination>
               </div>
               <div class="mt-0 pl-1">
                 <b-form-select size="sm" v-model="settings.crossTab.pageSize" @change="settingsUpdated" :options="pageSizes" v-b-popover.hover.top="'Addresses page size'"></b-form-select>
               </div>
             </div>
-            <b-table small fixed striped selectable responsive hover :fields="crossTabFields" :items="pagedFilteredSortedCrossTab" show-empty empty-html="Enter ERC-721 NFT collection address in the top left input field and click Retrieve" head-variant="light" class="m-0 mt-1">
+            <b-table small fixed striped selectable responsive hover :fields="ownersFields" :items="pagedFilteredSortedOwners" show-empty empty-html="[+] to add NFT collection, select single collection then [Sync]" head-variant="light" class="m-0 mt-1">
+              <!--
               <template #head()="data">
                 <div v-if="data.field.key == 'number'">
                   {{ data.field.label }}
@@ -249,6 +250,7 @@
                   </b-avatar>
                 </div>
               </template>
+              -->
               <template #cell(number)="data">
                 <!-- <b-form-checkbox size="sm" :checked="selectedCollections[data.item.contract] ? 1 : 0" value="1" @change="toggleSelectedCollections([data.item])"> -->
                   {{ parseInt(data.index) + ((settings.crossTab.currentPage - 1) * settings.crossTab.pageSize) + 1 }}
@@ -458,6 +460,13 @@
             { key: 'owner', label: 'Owner', sortable: false, thStyle: 'width: 30%;', tdClass: 'text-truncate' },
             { key: 'collections', label: 'Collections', sortable: false, thStyle: 'width: 65%;', tdClass: 'text-truncate' },
           ],
+          ownersFields: [
+            { key: 'number', label: '#', sortable: false, thStyle: 'width: 5%;', tdClass: 'text-truncate' },
+            { key: 'owner', label: 'Owner', sortable: false, thStyle: 'width: 20%;', tdClass: 'text-truncate' },
+            { key: 'listed', label: 'Listed', sortable: false, thStyle: 'width: 10%;', thClass: 'text-right', tdClass: 'text-right' },
+            { key: 'owned', label: 'Owned', sortable: false, thStyle: 'width: 10%;', thClass: 'text-right', tdClass: 'text-right' },
+            { key: 'items', label: 'Items', sortable: false, thStyle: 'width: 55%;' },
+          ],
           db: {
             name: "nftowner089",
             version: 1,
@@ -577,7 +586,29 @@
           pagedFilteredSortedCollections() {
             return this.filteredSortedCollections.slice((this.settings.collections.currentPage - 1) * this.settings.collections.pageSize, this.settings.collections.currentPage * this.settings.collections.pageSize);
           },
-          crossTabFields() {
+          // ownersFields() {
+          //   const contracts = [];
+          //   for (const [contract, collection] of Object.entries(this.collections)) {
+          //     if (collection.sort != null && collection.sort.length > 0) {
+          //       contracts.push({ contract, sort: collection.sort });
+          //     }
+          //   }
+          //   contracts.sort((a, b) => ('' + a.sort).localeCompare(b.sort));
+          //   const order = contracts.map(e => e.contract).slice(0, 15);
+          //   console.log("ownersFields - order: " + JSON.stringify(order));
+          //   const results = [];
+          //   results.push({ key: 'number', label: '#', thStyle: 'width: 5%;', tdClass: 'text-truncate' })
+          //   results.push({ key: 'owner', label: 'Owner', thStyle: 'width: 30%;', tdClass: 'text-truncate' })
+          //   for (const contractIndex in order) {
+          //     const contract = order[contractIndex];
+          //     const collection = this.collections[contract];
+          //     if (collection) {
+          //       results.push({ key: 'c' + contractIndex, label: collection.name, tdClass: 'text-truncate', thClass: 'text-right', tdClass: 'text-right', image: collection.image })
+          //     }
+          //   }
+          //   return results;
+          // },
+          filteredOwners() {
             const contracts = [];
             for (const [contract, collection] of Object.entries(this.collections)) {
               if (collection.sort != null && collection.sort.length > 0) {
@@ -586,29 +617,7 @@
             }
             contracts.sort((a, b) => ('' + a.sort).localeCompare(b.sort));
             const order = contracts.map(e => e.contract).slice(0, 15);
-            console.log("crossTabFields - order: " + JSON.stringify(order));
-            const results = [];
-            results.push({ key: 'number', label: '#', thStyle: 'width: 5%;', tdClass: 'text-truncate' })
-            results.push({ key: 'owner', label: 'Owner', thStyle: 'width: 30%;', tdClass: 'text-truncate' })
-            for (const contractIndex in order) {
-              const contract = order[contractIndex];
-              const collection = this.collections[contract];
-              if (collection) {
-                results.push({ key: 'c' + contractIndex, label: collection.name, tdClass: 'text-truncate', thClass: 'text-right', tdClass: 'text-right', image: collection.image })
-              }
-            }
-            return results;
-          },
-          filteredCrossTab() {
-            const contracts = [];
-            for (const [contract, collection] of Object.entries(this.collections)) {
-              if (collection.sort != null && collection.sort.length > 0) {
-                contracts.push({ contract, sort: collection.sort });
-              }
-            }
-            contracts.sort((a, b) => ('' + a.sort).localeCompare(b.sort));
-            const order = contracts.map(e => e.contract).slice(0, 15);
-            console.log("filteredCrossTab - order: " + JSON.stringify(order));
+            console.log("filteredOwners - order: " + JSON.stringify(order));
 
             const table = {};
             for (const contractIndex in order) {
@@ -637,55 +646,55 @@
             }
             return results;
           },
-          filteredSortedCrossTab() {
-            let results = this.filteredCrossTab;
-            if (this.settings.crossTab.sortOption == 'countasc') {
-              results.sort((a, b) => {
-                if (a.c0 == b.c0) {
-                  if (a.c1 == b.c1) {
-                    if (a.c2 == b.c2) {
-                      const tokensA = a.c3 && a.c3.length || 0;
-                      const tokensB = b.c3 && b.c3.length || 0;
-                      return tokensA - tokensB;
-                    } else {
-                      const tokensA = a.c2 && a.c2.length || 0;
-                      const tokensB = b.c2 && b.c2.length || 0;
-                      return tokensA - tokensB;
-                    }
-                  } else {
-                    const tokensA = a.c1 && a.c1.length || 0;
-                    const tokensB = b.c1 && b.c1.length || 0;
-                    return tokensA - tokensB;
-                  }
-                } else {
-                  const tokensA = a.c0 && a.c0.length || 0;
-                  const tokensB = b.c0 && b.c0.length || 0;
-                  return tokensA - tokensB;
-                }
-              });
-            } else if (this.settings.crossTab.sortOption == 'countdsc') {
-              results.sort((a, b) => {
-                if (a.c0 == b.c0) {
-                  if (a.c1 == b.c1) {
-                    const tokensA = a.c2 && a.c2.length || 0;
-                    const tokensB = b.c2 && b.c2.length || 0;
-                    return tokensB - tokensA;
-                  } else {
-                    const tokensA = a.c1 && a.c1.length || 0;
-                    const tokensB = b.c1 && b.c1.length || 0;
-                    return tokensB - tokensA;
-                  }
-                } else {
-                  const tokensA = a.c0 && a.c0.length || 0;
-                  const tokensB = b.c0 && b.c0.length || 0;
-                  return tokensB - tokensA;
-                }
-              });
-            }
+          filteredSortedOwners() {
+            let results = this.filteredOwners;
+            // if (this.settings.crossTab.sortOption == 'countasc') {
+            //   results.sort((a, b) => {
+            //     if (a.c0 == b.c0) {
+            //       if (a.c1 == b.c1) {
+            //         if (a.c2 == b.c2) {
+            //           const tokensA = a.c3 && a.c3.length || 0;
+            //           const tokensB = b.c3 && b.c3.length || 0;
+            //           return tokensA - tokensB;
+            //         } else {
+            //           const tokensA = a.c2 && a.c2.length || 0;
+            //           const tokensB = b.c2 && b.c2.length || 0;
+            //           return tokensA - tokensB;
+            //         }
+            //       } else {
+            //         const tokensA = a.c1 && a.c1.length || 0;
+            //         const tokensB = b.c1 && b.c1.length || 0;
+            //         return tokensA - tokensB;
+            //       }
+            //     } else {
+            //       const tokensA = a.c0 && a.c0.length || 0;
+            //       const tokensB = b.c0 && b.c0.length || 0;
+            //       return tokensA - tokensB;
+            //     }
+            //   });
+            // } else if (this.settings.crossTab.sortOption == 'countdsc') {
+            //   results.sort((a, b) => {
+            //     if (a.c0 == b.c0) {
+            //       if (a.c1 == b.c1) {
+            //         const tokensA = a.c2 && a.c2.length || 0;
+            //         const tokensB = b.c2 && b.c2.length || 0;
+            //         return tokensB - tokensA;
+            //       } else {
+            //         const tokensA = a.c1 && a.c1.length || 0;
+            //         const tokensB = b.c1 && b.c1.length || 0;
+            //         return tokensB - tokensA;
+            //       }
+            //     } else {
+            //       const tokensA = a.c0 && a.c0.length || 0;
+            //       const tokensB = b.c0 && b.c0.length || 0;
+            //       return tokensB - tokensA;
+            //     }
+            //   });
+            // }
             return results;
           },
-          pagedFilteredSortedCrossTab() {
-            return this.filteredSortedCrossTab.slice((this.settings.crossTab.currentPage - 1) * this.settings.crossTab.pageSize, this.settings.crossTab.currentPage * this.settings.crossTab.pageSize);
+          pagedFilteredSortedOwners() {
+            return this.filteredSortedOwners.slice((this.settings.crossTab.currentPage - 1) * this.settings.crossTab.pageSize, this.settings.crossTab.currentPage * this.settings.crossTab.pageSize);
           },
           filteredMainTable() {
             const results = [];
