@@ -1128,10 +1128,12 @@
 
                   const owners = {};
                   for (const [tokenId, data] of Object.entries(tokens)) {
-                    if (!(data.owner in owners)) {
-                      owners[data.owner] = [];
+                    if (data.owner) {
+                      if (!(data.owner in owners)) {
+                        owners[data.owner] = [];
+                      }
+                      owners[data.owner].push(tokenId);                      
                     }
-                    owners[data.owner].push(tokenId);
                   }
 
                   this.sync.completed = 0;
