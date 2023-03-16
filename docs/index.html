@@ -224,7 +224,7 @@
               <div class="mt-0 flex-grow-1">
               </div>
               <div class="mt-0 pr-1">
-                <b-form-select size="sm" v-model="settings.owners.sortOption" @change="settingsUpdated" :options="mainTableSortOptions" v-b-popover.hover.top="'Yeah. Sort'"></b-form-select>
+                <b-form-select size="sm" v-model="settings.owners.sortOption" @change="settingsUpdated" :options="ownersSortOptions" v-b-popover.hover.top="'Yeah. Sort'"></b-form-select>
               </div>
               <div class="mt-0 pr-1">
                 <font size="-2" v-b-popover.hover.top="'# txs'">{{ filteredSortedOwners.length }}</font>
@@ -273,6 +273,40 @@
                   <div v-for="token in data.item.items.slice(0, 10)">
                     <b-card body-class="p-0" header-class="p-1" img-top class="m-1 p-0 border-0" style="max-width: 4rem;">
                       <b-avatar button rounded size="4rem" :src="token.image"></b-avatar>
+                      <b-card-text class="text-right">
+                        <div class="d-flex justify-content-between m-0 p-0">
+                          <font size="-2">
+                            <b-button size="sm" :id="'popover-target-' + token.tokenId" variant="link" class="m-0 p-0">
+                              {{ token.tokenId }}
+                            </b-button>
+                            <b-popover :target="'popover-target-' + token.tokenId" placement="right">
+                              <template #title>{{ token.tokenId }}</template>
+                              <b-link :href="'https://opensea.io/assets/ethereum/' + selectedContract + '/' + token.tokenId" v-b-popover.hover.bottom="'View in opensea.io'" target="_blank">
+                                OpenSea
+                              </b-link>
+                              <!--
+                              <b-link :href="'https://opensea.io/assets/ethereum/' + contractAddress + '/' + tokenId" v-b-popover.hover.bottom="'View in opensea.io'" target="_blank">
+                                OpenSea
+                              </b-link>
+                              <br />
+                              <b-link :href="'https://looksrare.org/collections/' + contractAddress + '/' + tokenId" v-b-popover.hover.bottom="'View in looksrare.org'" target="_blank">
+                                LooksRare
+                              </b-link>
+                              <br />
+                              <b-link :href="'https://x2y2.io/eth/' + contractAddress + '/' + tokenId" v-b-popover.hover.bottom="'View in x2y2.io'" target="_blank">
+                                X2Y2
+                              </b-link>
+                              <br />
+                              <b-link :href="'https://app.indeliblelabs.io/api/png/' + contractAddress + '/' + tokenId" v-b-popover.hover.bottom="'Server generated PNG'" target="_blank">
+                                PNG Image
+                              </b-link>
+                              -->
+                            </b-popover>
+                          </font>
+                        </div>
+                        <div class="flex-grow-1">
+                        </div>
+                      </b-card-text>
                     </b-card>
                     <!-- {{ token }} -->
                   </div>
@@ -328,7 +362,7 @@
               <!-- <div class="mt-0 flex-grow-1">
               </div> -->
               <div class="mt-0 pr-1">
-                <b-form-select size="sm" v-model="settings.mainTable.sortOption" @change="settingsUpdated" :options="mainTableSortOptions" v-b-popover.hover.top="'Yeah. Sort'"></b-form-select>
+                <b-form-select size="sm" v-model="settings.mainTable.sortOption" @change="settingsUpdated" :options="ownersSortOptions" v-b-popover.hover.top="'Yeah. Sort'"></b-form-select>
               </div>
               <div class="mt-0 pr-1">
                 <font size="-2" v-b-popover.hover.top="'# txs'">{{ filteredSortedMainTable.length }}</font>
@@ -398,8 +432,8 @@
             owners: {
               filter: null,
               currentPage: 1,
-              pageSize: 100,
-              sortOption: 'countdsc',
+              pageSize: 10,
+              sortOption: 'listeddsc',
             },
             mainTable: {
               filter: null,
@@ -447,9 +481,11 @@
             { value: 'volallasc', text: '▲ All Time Volume' },
             { value: 'volalldsc', text: '▼ All Time Volume' },
           ],
-          mainTableSortOptions: [
-            { value: 'countasc', text: '▲ Collection #1 Token Count' },
-            { value: 'countdsc', text: '▼ Collection #1 Token Count' },
+          ownersSortOptions: [
+            { value: 'listedasc', text: '▲ Listed' },
+            { value: 'listeddsc', text: '▼ Listed' },
+            { value: 'ownedasc', text: '▲ Owned' },
+            { value: 'owneddsc', text: '▼ Owned' },
           ],
           pageSizes: [
             { value: 5, text: '5' },
@@ -495,6 +531,9 @@
 
         // --- COMPUTED ---
         computed: {
+          selectedContract() {
+            return Object.keys(this.selectedCollections).length == 1 && Object.keys(this.selectedCollections)[0] || null;
+          },
           filteredCollections() {
             const results = [];
             for (const [contract, item] of Object.entries(this.collections)) {
@@ -696,7 +735,8 @@
           },
           filteredSortedOwners() {
             let results = this.filteredOwners;
-            // if (this.settings.owners.sortOption == 'countasc') {
+
+            if (this.settings.owners.sortOption == 'listedasc') {
             //   results.sort((a, b) => {
             //     if (a.c0 == b.c0) {
             //       if (a.c1 == b.c1) {
@@ -720,7 +760,9 @@
             //       return tokensA - tokensB;
             //     }
             //   });
-            // } else if (this.settings.owners.sortOption == 'countdsc') {
+            } else if (this.settings.owners.sortOption == 'listeddsc') {
+            } else if (this.settings.owners.sortOption == 'ownedasc') {
+            } else if (this.settings.owners.sortOption == 'owneddsc') {
             //   results.sort((a, b) => {
             //     if (a.c0 == b.c0) {
             //       if (a.c1 == b.c1) {
@@ -738,7 +780,7 @@
             //       return tokensB - tokensA;
             //     }
             //   });
-            // }
+            }
             return results;
           },
           pagedFilteredSortedOwners() {
