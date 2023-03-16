@@ -641,70 +641,10 @@
           pagedFilteredSortedCollections() {
             return this.filteredSortedCollections.slice((this.settings.collections.currentPage - 1) * this.settings.collections.pageSize, this.settings.collections.currentPage * this.settings.collections.pageSize);
           },
-          // ownersFields() {
-          //   const contracts = [];
-          //   for (const [contract, collection] of Object.entries(this.collections)) {
-          //     if (collection.sort != null && collection.sort.length > 0) {
-          //       contracts.push({ contract, sort: collection.sort });
-          //     }
-          //   }
-          //   contracts.sort((a, b) => ('' + a.sort).localeCompare(b.sort));
-          //   const order = contracts.map(e => e.contract).slice(0, 15);
-          //   console.log("ownersFields - order: " + JSON.stringify(order));
-          //   const results = [];
-          //   results.push({ key: 'number', label: '#', thStyle: 'width: 5%;', tdClass: 'text-truncate' })
-          //   results.push({ key: 'owner', label: 'Owner', thStyle: 'width: 30%;', tdClass: 'text-truncate' })
-          //   for (const contractIndex in order) {
-          //     const contract = order[contractIndex];
-          //     const collection = this.collections[contract];
-          //     if (collection) {
-          //       results.push({ key: 'c' + contractIndex, label: collection.name, tdClass: 'text-truncate', thClass: 'text-right', tdClass: 'text-right', image: collection.image })
-          //     }
-          //   }
-          //   return results;
-          // },
           filteredOwners() {
             const contracts = [];
-            // console.log("selectedCollections: " + JSON.stringify(this.selectedCollections, null, 2));
-            // console.log("filteredOwners: " + JSON.stringify(this.collections, null, 2));
-            // for (const [contract, collection] of Object.entries(this.collections)) {
-            //   if (collection.sort != null && collection.sort.length > 0) {
-            //     contracts.push({ contract, sort: collection.sort });
-            //   }
-            // }
-
             const collection = Object.keys(this.selectedCollections).length == 1 && this.collections[Object.keys(this.selectedCollections)[0]] || null;
-            console.log("collection: " + JSON.stringify(collection, null, 2));
-
-            // contracts.sort((a, b) => ('' + a.sort).localeCompare(b.sort));
-            // const order = contracts.map(e => e.contract).slice(0, 15);
-            // console.log("filteredOwners - order: " + JSON.stringify(order));
-            //
-            // const table = {};
-            // for (const contractIndex in order) {
-            //   const contract = order[contractIndex];
-            //   const collection = this.collections[contract];
-            //   if (collection) {
-            //     const tokens = collection.tokens;
-            //     const owners = collection.owners;
-            //     for (const [owner, tokenIds] of Object.entries(owners)) {
-            //       if (!(owner in table)) {
-            //         table[owner] = {};
-            //       }
-            //       table[owner][contract] = tokenIds;
-            //     }
-            //   }
-            // }
             const results = [];
-            // for (const [owner, row] of Object.entries(table)) {
-            //   const record = {};
-            //   record['owner'] = owner;
-            //   for (const contractIndex in order) {
-            //     const contract = order[contractIndex];
-            //     record['c' + contractIndex.toString()] = row[contract] || null;
-            //   }
-            //   results.push(record);
-            // }
             if (collection) {
               const owners = {};
               for (const [tokenId, tokenInfo] of Object.entries(collection.tokens)) {
@@ -717,9 +657,7 @@
                   owners[tokenInfo.owner].tokens.push({ tokenId, ...tokenInfo, owner: undefined });
                 }
               }
-              // console.log("owners: " + JSON.stringify(owners, null, 2));
               for (const [owner, ownerInfo] of Object.entries(owners)) {
-                // console.log("owner: " + owner + " " + JSON.stringify(ownerInfo));
                 let listed = 0;
                 for (const token of ownerInfo.tokens) {
                   console.log("  " + JSON.stringify(token));
@@ -730,56 +668,42 @@
                 results.push({ owner, listed, owned: ownerInfo.tokens.length, items: ownerInfo.tokens });
               }
             }
-            // console.log("results: " + JSON.stringify(results));
             return results;
           },
           filteredSortedOwners() {
             let results = this.filteredOwners;
-
             if (this.settings.owners.sortOption == 'listedasc') {
-            //   results.sort((a, b) => {
-            //     if (a.c0 == b.c0) {
-            //       if (a.c1 == b.c1) {
-            //         if (a.c2 == b.c2) {
-            //           const tokensA = a.c3 && a.c3.length || 0;
-            //           const tokensB = b.c3 && b.c3.length || 0;
-            //           return tokensA - tokensB;
-            //         } else {
-            //           const tokensA = a.c2 && a.c2.length || 0;
-            //           const tokensB = b.c2 && b.c2.length || 0;
-            //           return tokensA - tokensB;
-            //         }
-            //       } else {
-            //         const tokensA = a.c1 && a.c1.length || 0;
-            //         const tokensB = b.c1 && b.c1.length || 0;
-            //         return tokensA - tokensB;
-            //       }
-            //     } else {
-            //       const tokensA = a.c0 && a.c0.length || 0;
-            //       const tokensB = b.c0 && b.c0.length || 0;
-            //       return tokensA - tokensB;
-            //     }
-            //   });
+              results.sort((a, b) => {
+                if (a.listed == b.listed) {
+                  return a.owned - b.owned;
+                } else {
+                  return a.listed - b.listed;
+                }
+              });
             } else if (this.settings.owners.sortOption == 'listeddsc') {
+                results.sort((a, b) => {
+                  if (a.listed == b.listed) {
+                    return b.owned - a.owned;
+                  } else {
+                    return b.listed - a.listed;
+                  }
+                });
             } else if (this.settings.owners.sortOption == 'ownedasc') {
+              results.sort((a, b) => {
+                if (a.owned == b.owned) {
+                  return a.listed - b.listed;
+                } else {
+                  return a.owned - b.owned;
+                }
+              });
             } else if (this.settings.owners.sortOption == 'owneddsc') {
-            //   results.sort((a, b) => {
-            //     if (a.c0 == b.c0) {
-            //       if (a.c1 == b.c1) {
-            //         const tokensA = a.c2 && a.c2.length || 0;
-            //         const tokensB = b.c2 && b.c2.length || 0;
-            //         return tokensB - tokensA;
-            //       } else {
-            //         const tokensA = a.c1 && a.c1.length || 0;
-            //         const tokensB = b.c1 && b.c1.length || 0;
-            //         return tokensB - tokensA;
-            //       }
-            //     } else {
-            //       const tokensA = a.c0 && a.c0.length || 0;
-            //       const tokensB = b.c0 && b.c0.length || 0;
-            //       return tokensB - tokensA;
-            //     }
-            //   });
+              results.sort((a, b) => {
+                if (a.owned == b.owned) {
+                  return b.listed - a.listed;
+                } else {
+                  return b.owned - a.owned;
+                }
+              });
             }
             return results;
           },
