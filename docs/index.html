@@ -1141,12 +1141,27 @@
                   const ensMap = {};
                   for (let i = 0; i < addresses.length & !this.sync.halt; i += ENSOWNERBATCHSIZE) {
                     const batch = addresses.slice(i, parseInt(i) + ENSOWNERBATCHSIZE);
-                    const allnames = await ensReverseRecordsContract.getNames(batch);
-                    for (let j = 0; j < batch.length; j++) {
-                      const address = batch[j];
-                      const name = allnames[j];
-                      ensMap[address] = name != null && name.length > 0 ? name : address;
-                      // const normalized = normalize(address);
+                    try {
+                      const allnames = await ensReverseRecordsContract.getNames(batch);
+                      for (let j = 0; j < batch.length; j++) {
+                        const address = batch[j];
+                        const name = allnames[j];
+                        ensMap[address] = name != null && name.length > 0 ? name : address;
+                        // const normalized = normalize(address);
+                      }
+                    } catch (e) {
+                      console.log("Retrying individually as ENS reverse record search failed for batch: " + JSON.stringify(batch));
+                      // Retry individually
+                      for (let k = 0; k < batch.length; k++) {
+                        const address = batch[k];
+                        try {
+                          const onename = await ensReverseRecordsContract.getNames([address]);
+                          ensMap[address] = onename[0] != null && onename[0].length > 0 ? onename[0] : address;
+                          // const normalized = normalize(address);
+                        } catch (e1) {
+                          console.log("ENS reverse records failed for: " + address);
+                        }
+                      }
                     }
                     this.sync.completed = parseInt(this.sync.completed) + batch.length;
                   }
