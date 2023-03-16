@@ -239,7 +239,7 @@
                 <b-form-select size="sm" v-model="settings.owners.pageSize" @change="settingsUpdated" :options="pageSizes" v-b-popover.hover.top="'Addresses page size'"></b-form-select>
               </div>
             </div>
-            <b-table small fixed striped selectable responsive hover :fields="ownersFields" :items="pagedFilteredSortedOwners" show-empty empty-html="[+] to add NFT collection, select single collection then [Sync]" head-variant="light" class="m-0 mt-1">
+            <b-table small fixed striped selectable responsive hover :fields="ownersFields" :items="pagedFilteredSortedOwners" show-empty empty-html="[+] to add NFT collection, select single collection then [Sync].<br /><br />Note: ENS names only retrieved for the last synced collection" head-variant="light" class="m-0 mt-1">
               <template #cell(number)="data">
                 {{ parseInt(data.index) + ((settings.owners.currentPage - 1) * settings.owners.pageSize) + 1 }}
               </template>
@@ -303,101 +303,10 @@
               </template>
             </b-table>
           </b-card>
-
-          <b-card v-if="false" class="m-0 p-0 border-0" body-class="m-1 p-0" header-class="m-0 p-2">
-            <template #header>
-              Owners
-            </template>
-            <div class="d-flex flex-wrap m-0 p-0">
-              <div class="mt-0 pr-1">
-                <b-form-input type="text" size="sm" v-model.trim="settings.mainCollection" @change="settingsUpdated" debounce="600" v-b-popover.hover.top="'Main collection to start from'" placeholder="0x{NFT collection address}" style="min-width: 12.0rem;"></b-form-input>
-              </div>
-              <div class="mt-0 pr-1">
-                <b-button size="sm" :disabled="sync.section != null || settings.mainCollection == null || settings.mainCollection.length == 0" @click="processIt('retrieveMainCollection')" variant="primary" v-b-popover.hover.top="'Retrieve main collection data'">Retrieve Main</b-button>
-              </div>
-              <div class="mt-0 pr-1">
-                <b-button size="sm" :disabled="sync.section != null || filteredSortedMainTable.length == 0" @click="processIt('retrieveSecondaryCollection')" variant="primary" v-b-popover.hover.top="'Retrieve secondary collection data'">Retrieve Secondary</b-button>
-              </div>
-              <!-- <div class="mt-0 pr-1">
-                <b-form-input type="text" size="sm" v-model.trim="settings.addressTable.searchAddresses" @change="settingsUpdated" debounce="600" v-b-popover.hover.top="'Filter by partial address, name'" placeholder="🔍 address"></b-form-input>
-              </div> -->
-              <div class="mt-0 flex-grow-1">
-              </div>
-              <div class="mt-1" style="width: 200px;">
-                <b-progress v-if="sync.section != null" height="1.5rem" :max="sync.total" show-progress :animated="sync.section != null" :variant="sync.section != null ? 'success' : 'secondary'" v-b-popover.hover.top="'Click the button on the right to stop. This process can be continued later'">
-                  <b-progress-bar :value="sync.completed">
-                    {{ sync.total == null ? (sync.completed + ' ' + sync.section) : (sync.completed + '/' + sync.total + ' ' + ((sync.completed / sync.total) * 100).toFixed(0) + '% ' + sync.section) }}
-                  </b-progress-bar>
-                </b-progress>
-              </div>
-              <div class="ml-0 mt-1">
-                <b-button v-if="sync.section != null" size="sm" @click="halt" variant="link" v-b-popover.hover.top="'Click to stop. It may take a few minutes to clean up. This process can be continued later'"><b-icon-stop-fill shift-v="+1" font-scale="1.0"></b-icon-stop-fill></b-button>
-              </div>
-              <div class="mt-0 flex-grow-1">
-              </div>
-              <!-- <div class="mt-0 flex-grow-1">
-              </div>
-              <div class="mt-0 pr-0">
-                <b-button size="sm" :pressed.sync="settings.addAddresses" @click="settingsUpdated" variant="link" v-b-popover.hover.top="'Add addresses, tx hashes, Etherscan API key'"><span v-if="settings.addAddresses"><b-icon-plus-square-fill shift-v="+1" font-scale="1.0"></b-icon-plus-square-fill></span><span v-else><b-icon-plus-square shift-v="+1" font-scale="1.0"></b-icon-plus-square></span></b-button>
-              </div>
-              <div class="mt-0 pr-1">
-                <b-button size="sm" :pressed.sync="settings.editAddresses" @click="settingsUpdated" :variant="settings.editAddresses ? 'danger' : 'link'" v-b-popover.hover.top="settings.editAddresses ? 'End editing address attributes' : 'Edit address attributes'"><b-icon-pencil shift-v="+1" font-scale="1.0"></b-icon-pencil></b-button>
-              </div> -->
-              <!-- <div class="mt-0 flex-grow-1">
-              </div> -->
-              <!-- <div class="mt-0 pr-1">
-                <b-button size="sm" @click="exportData" variant="link">Export</b-button>
-              </div> -->
-              <!-- <div class="mt-0 flex-grow-1">
-              </div> -->
-              <div class="mt-0 pr-1">
-                <b-form-select size="sm" v-model="settings.mainTable.sortOption" @change="settingsUpdated" :options="ownersSortOptions" v-b-popover.hover.top="'Yeah. Sort'"></b-form-select>
-              </div>
-              <div class="mt-0 pr-1">
-                <font size="-2" v-b-popover.hover.top="'# txs'">{{ filteredSortedMainTable.length }}</font>
-              </div>
-              <div class="mt-0 pr-1">
-                <b-pagination size="sm" v-model="settings.mainTable.currentPage" @input="settingsUpdated" :total-rows="filteredSortedMainTable.length" :per-page="settings.mainTable.pageSize" style="height: 0;"></b-pagination>
-              </div>
-              <div class="mt-0 pl-1">
-                <b-form-select size="sm" v-model="settings.mainTable.pageSize" @change="settingsUpdated" :options="pageSizes" v-b-popover.hover.top="'Addresses page size'"></b-form-select>
-              </div>
-            </div>
-
-            <b-table small fixed striped selectable responsive hover :fields="mainTableFields" :items="pagedFilteredSortedMainTable" show-empty empty-html="Enter ERC-721 NFT collection address in the top left input field and click Retrieve" head-variant="light" class="m-0 mt-1">
-              <template #head(number)="data">
-                <b-dropdown size="sm" variant="link" v-b-popover.hover="'Toggle selection'">
-                  <template #button-content>
-                    <b-icon-check-square shift-v="+1" font-scale="0.9"></b-icon-check-square>
-                  </template>
-                  <b-dropdown-item href="#" @click="toggleSelectedMainTable(pagedFilteredSortedMainTable)">Toggle selection for all addresses on this page</b-dropdown-item>
-                  <b-dropdown-item href="#" @click="toggleSelectedMainTable(filteredSortedMainTable)">Toggle selection for all addresses on all pages</b-dropdown-item>
-                  <b-dropdown-item href="#" @click="clearSelectedMainTable()">Clear selection</b-dropdown-item>
-                </b-dropdown>
-              </template>
-              <template #cell(number)="data">
-                <b-form-checkbox size="sm" :checked="selectedMainTable[data.item.owner] ? 1 : 0" value="1" @change="toggleSelectedMainTable([data.item])">
-                  {{ parseInt(data.index) + ((settings.mainTable.currentPage - 1) * settings.mainTable.pageSize) + 1 }}
-                </b-form-checkbox>
-              </template>
-              <template #cell(owner)="data">
-                {{ ensOrAddress(data.item.owner) }}
-              </template>
-              <template #cell(collections)="data">
-                <b-avatar rounded :badge="data.item.count.toString()" variant="light" size="3.0rem" :src="mainToken.collection.image" v-b-popover.hover="mainToken.collection.name + ' x ' + data.item.count">
-                </b-avatar>
-                +
-                <span v-for="(collection, collectionIndex) in getSecondaryCollectionsForOwner(data.item.owner)" :key="collectionIndex">
-                  <b-avatar rounded :badge="collection.count.toString()" variant="light" size="3.0rem" :src="collection.collectionImage" v-b-popover.hover="collection.collectionName + ' x ' + collection.count">
-                  </b-avatar>
-                </span>
-              </template>
-            </b-table>
-          </b-card>
         </b-card>
         <b-card no-header body-class="m-0 p-0" class="m-0 p-0 border-0">
           <b-card-text class="text-right">
-            gm, and enjoy! <i>Txs</i> &copy; Bok Consulting Pty Ltd 2022.
+            gm, and enjoy! <i>Txs</i> &copy; Bok Consulting Pty Ltd 2023.
           </b-card-text>
         </b-card no-header>
       </b-container>
@@ -876,7 +785,7 @@
               rows.push([
                 i,
                 result.owner,
-                result.ens,
+                ens,
                 result.listed,
                 result.owned,
                 tokenIds.join(';'),
