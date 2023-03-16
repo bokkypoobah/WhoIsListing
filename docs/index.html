@@ -268,8 +268,15 @@
               <template #cell(owned)="data">
                 {{ data.item.owned }}
               </template>
-              <template #cell()="data">
-                {{ data.value && data.value.length || '' }}
+              <template #cell(items)="data">
+                <b-card-group deck class="m-1 ml-0 p-0">
+                  <div v-for="token in data.item.items.slice(0, 10)">
+                    <b-card body-class="p-0" header-class="p-1" img-top class="m-1 p-0 border-0" style="max-width: 4rem;">
+                      <b-avatar button rounded size="4rem" :src="token.image"></b-avatar>
+                    </b-card>
+                    <!-- {{ token }} -->
+                  </div>
+                </b-card-group>
               </template>
             </b-table>
           </b-card>
@@ -673,7 +680,7 @@
               }
               // console.log("owners: " + JSON.stringify(owners, null, 2));
               for (const [owner, ownerInfo] of Object.entries(owners)) {
-                console.log("owner: " + owner + " " + JSON.stringify(ownerInfo));
+                // console.log("owner: " + owner + " " + JSON.stringify(ownerInfo));
                 let listed = 0;
                 for (const token of ownerInfo.tokens) {
                   console.log("  " + JSON.stringify(token));
@@ -684,7 +691,7 @@
                 results.push({ owner, listed, owned: ownerInfo.tokens.length, items: ownerInfo.tokens });
               }
             }
-            console.log("results: " + JSON.stringify(results));
+            // console.log("results: " + JSON.stringify(results));
             return results;
           },
           filteredSortedOwners() {
