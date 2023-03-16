@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>NFT Owners</title>
+    <title>Who Is Listing?</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <meta name="description" content="NFT Owners (c) Bok Consulting Pty Ltd 2022" />
+    <meta name="description" content="Who Is Listing? (c) Bok Consulting Pty Ltd 2022" />
     <meta name="author" content="BokkyPooBah" />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:site" content="@BokkyPooBah" />
@@ -48,7 +48,7 @@
         <b-navbar toggleable="sm" variant="light" class="mx-1 my-0 p-0">
           <b-navbar-brand to="/" variant="primary">
             <b-avatar rounded variant="light" size="3.0rem" src="images/ZombieBaby_001_gp2_3871_8601_10786.gif" v-b-popover.hover.bottom="'gm'" class="ml-0"></b-avatar>
-            <em v-b-popover.hover.bottom="'gm gm gm'">NFT Owners</em>
+            <em v-b-popover.hover.bottom="'gm gm gm'">Who Is Listing?</em>
           </b-navbar-brand>
           <b-navbar-nav class="ml-auto">
             <!-- <b-avatar v-if="coinbase && coinbase != ensOrAddress(coinbase)" rounded variant="light" size="2.0rem" :src="'https://metadata.ens.domains/mainnet/avatar/' + ensOrAddress(coinbase)" v-b-popover.hover="'Your ENS avatar if set'"></b-avatar>
@@ -75,7 +75,7 @@
                 <b-form-input type="text" size="sm" v-model.trim="settings.collections.filter" @change="settingsUpdated" debounce="600" v-b-popover.hover.top="'Collection name filter'" placeholder="🔍 collection" style="min-width: 12.0rem;"></b-form-input>
               </div>
               <div class="mt-0 pr-1">
-                <b-button size="sm" :disabled="sync.section != null || Object.keys(selectedCollections).length == 0" @click="processIt('syncCollections')" variant="primary" v-b-popover.hover.top="'Select collections to sync first'">Sync</b-button>
+                <b-button size="sm" :disabled="sync.section != null || Object.keys(selectedCollections).length != 1" @click="processIt('syncCollections')" variant="primary" v-b-popover.hover.top="'Select A SINGLE collections to sync first'">Sync</b-button>
               </div>
               <div class="mt-0 flex-grow-1">
               </div>
@@ -924,6 +924,7 @@
               continuation = data.continuation;
               if (data && data.collections) {
                 for (const collectionData of data.collections) {
+                  console.log(JSON.stringify(collectionData, null, 2));
                   const contract = collectionData.id;
                   const name = collectionData.name;
                   const slug = collectionData.slug;
@@ -1092,15 +1093,18 @@
                     continuation = data.continuation;
                     if (data && data.tokens) {
                       for (const tokenData of data.tokens) {
+                        // console.log("tokenData: " + JSON.stringify(tokenData, null, 2));
                         const token = tokenData.token;
                         tokens[token.tokenId] = {
                           owner: token.owner,
                           image: token.image,
+                          isFlagged: token.isFlagged,
+                          price: tokenData.market.floorAsk.price || null,
                         };
                       }
                     }
                     this.sync.completed = Object.keys(tokens).length;
-                    await delay(1500); // TODO: Adjust to avoid error 429 Too Many Requests. Fails at 200ms
+                    await delay(2000); // TODO: Adjust to avoid error 429 Too Many Requests. Fails at 200ms
                   } while (continuation != null /*&& !state.halt && !state.sync.error */);
                   Vue.set(this.collections[contract], 'tokens', tokens);
                   const owners = {};
@@ -1174,9 +1178,9 @@
                     } else {
                       stop = true;
                     }
-                    await delay(1500); // TODO: Adjust to avoid error 429 Too Many Requests. Fails at 200ms
+                    await delay(2000); // TODO: Adjust to avoid error 429 Too Many Requests. Fails at 200ms
                   }
-                  await delay(1000); // TODO: Adjust to avoid error 429 Too Many Requests. Fails at 200ms
+                  await delay(2000); // TODO: Adjust to avoid error 429 Too Many Requests. Fails at 200ms
                   this.sync.completed = parseInt(this.sync.completed) + 1;
                   if (this.sync.halt) {
                     break;
