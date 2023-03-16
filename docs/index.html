@@ -240,30 +240,13 @@
               </div>
             </div>
             <b-table small fixed striped selectable responsive hover :fields="ownersFields" :items="pagedFilteredSortedOwners" show-empty empty-html="[+] to add NFT collection, select single collection then [Sync]" head-variant="light" class="m-0 mt-1">
-              <!--
-              <template #head()="data">
-                <div v-if="data.field.key == 'number'">
-                  {{ data.field.label }}
-                </div>
-                <div v-else-if="data.field.key == 'owner'">
-                  {{ data.field.label }}
-                </div>
-                <div v-else>
-                  <b-avatar rounded variant="light" size="3.0rem" :src="data.field.image" v-b-popover.hover="data.field.label" >
-                  </b-avatar>
-                </div>
-              </template>
-              -->
               <template #cell(number)="data">
-                <!-- <b-form-checkbox size="sm" :checked="selectedCollections[data.item.contract] ? 1 : 0" value="1" @change="toggleSelectedCollections([data.item])"> -->
-                  {{ parseInt(data.index) + ((settings.owners.currentPage - 1) * settings.owners.pageSize) + 1 }}
-                <!-- </b-form-checkbox> -->
+                {{ parseInt(data.index) + ((settings.owners.currentPage - 1) * settings.owners.pageSize) + 1 }}
               </template>
               <template #cell(owner)="data">
                 <b-link :href="'https://opensea.io/' + data.item.owner" v-b-popover.hover.bottom="'View in opensea.io'" target="_blank">
                   {{ ensOrAddress(data.item.owner) }}
                 </b-link>
-
               </template>
               <template #cell(listed)="data">
                 {{ data.item.listed }}
@@ -663,6 +646,7 @@
                   owners[tokenInfo.owner].tokens.push({ tokenId, ...tokenInfo, owner: undefined });
                 }
               }
+              const accountFilterLower = this.settings.owners.filter && this.settings.owners.filter.toLowerCase() || null;
               for (const [owner, ownerInfo] of Object.entries(owners)) {
                 let listed = 0;
                 for (const token of ownerInfo.tokens) {
@@ -670,7 +654,18 @@
                     listed++;
                   }
                 }
-                results.push({ owner, listed, owned: ownerInfo.tokens.length, items: ownerInfo.tokens });
+                let include = true;
+                if (accountFilterLower) {
+                  const ens = this.ensMap[owner] || null;
+                  if (
+                    !(owner.toLowerCase().includes(accountFilterLower)) &&
+                    !(ens != null && ens.includes(accountFilterLower))) {
+                    include = false;
+                  }
+                }
+                if (include) {
+                  results.push({ owner, listed, owned: ownerInfo.tokens.length, items: ownerInfo.tokens });
+                }
               }
             }
             return results;
