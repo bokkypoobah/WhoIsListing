@@ -122,7 +122,7 @@
               <!-- <div class="mt-0 flex-grow-1">
               </div> -->
               <!-- <div class="mt-0 pr-1">
-                <b-button size="sm" @click="exportData" variant="link">Export</b-button>
+                <b-button size="sm" @click="exportOwners" variant="link">Export</b-button>
               </div> -->
               <!-- <div class="mt-0 flex-grow-1">
               </div> -->
@@ -224,7 +224,10 @@
               <div class="mt-0 flex-grow-1">
               </div>
               <div v-if="filteredSortedOwners.length > 0" class="mt-0 pr-1">
-                <b-button size="sm" @click="exportData" variant="link" v-b-popover.hover.top="'Export data'"><b-icon-file-earmark-spreadsheet shift-v="+1" font-scale="1.2"></b-icon-file-earmark-spreadsheet></b-button>
+                <b-button size="sm" @click="exportOwners" variant="link" v-b-popover.hover.top="'Export owner data'"><b-icon-file-earmark-spreadsheet shift-v="+1" font-scale="1.2"></b-icon-file-earmark-spreadsheet></b-button>
+              </div>
+              <div v-if="filteredSortedOwners.length > 0" class="mt-0 pr-1">
+                <b-button size="sm" @click="exportTokens" variant="link" v-b-popover.hover.top="'Export token data'"><b-icon-file-earmark-spreadsheet shift-v="+1" font-scale="1.2"></b-icon-file-earmark-spreadsheet></b-button>
               </div>
               <div class="mt-0 pr-1">
                 <b-form-select size="sm" v-model="settings.owners.sortOption" @change="settingsUpdated" :options="ownersSortOptions" v-b-popover.hover.top="'Yeah. Sort'"></b-form-select>
@@ -780,8 +783,8 @@
             document.body.appendChild(link); // Required for FF
             link.click();
           },
-          exportData() {
-            console.log("exportData");
+          exportOwners() {
+            console.log("exportOwners");
             const rows = [
                 ["No", "Account", "ENS", "Listed", "Owned", "TokenIds"],
             ];
@@ -804,7 +807,35 @@
             var encodedUri = encodeURI(csvContent);
             var link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "whoislisting_export-" + moment().format("YYYY-MM-DD-HH-mm-ss") + ".tsv");
+            link.setAttribute("download", "whoislisting_owners_export-" + moment().format("YYYY-MM-DD-HH-mm-ss") + ".tsv");
+            document.body.appendChild(link); // Required for FF
+            link.click();
+          },
+          exportTokens() {
+            console.log("exportTokens");
+            const rows = [
+                ["TokenId", "Account", "ENS", "isFlagged", "Price", "Currency", "Image"],
+            ];
+            const collection = Object.keys(this.selectedCollections).length == 1 && this.collections[Object.keys(this.selectedCollections)[0]] || null;
+            if (collection) {
+              for (const [tokenId, tokenInfo] of Object.entries(collection.tokens)) {
+                const ens = this.ensMap[tokenInfo.owner] || '';
+                rows.push([
+                  tokenId,
+                  tokenInfo.owner,
+                  ens,
+                  tokenInfo.isFlagged,
+                  tokenInfo.price && tokenInfo.price.amount && tokenInfo.price.amount.native || '',
+                  tokenInfo.price && tokenInfo.price.currency && tokenInfo.price.currency.symbol || '',
+                  tokenInfo.image,
+                ]);
+              }
+            }
+            let csvContent = "data:text/tsv;charset=utf-8," + rows.map(e => e.join("\t")).join("\n");
+            var encodedUri = encodeURI(csvContent);
+            var link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "whoislisting_tokens_export-" + moment().format("YYYY-MM-DD-HH-mm-ss") + ".tsv");
             document.body.appendChild(link); // Required for FF
             link.click();
           },
